@@ -1,0 +1,26 @@
+{
+  "name": "jen",
+  "version": "0.1.0",
+  "description": "",
+  "bin": {
+    "jen": "./bin/jen.js"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sureshraj <m.s.suresh100@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "cli-table": "^0.3.1",
+    "commander": "^2.19.0",
+    "conf": "^3.0.0",
+    "figures": "^2.0.0",
+    "got": "^9.6.0",
+    "kleur": "^3.0.2",
+    "open": "^6.0.0",
+    "ora": "^3.2.0",
+    "prompts": "^2.0.3",
+    "terminal-link": "^1.2.0"
+  }
+}
