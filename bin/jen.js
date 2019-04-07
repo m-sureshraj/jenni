@@ -7,9 +7,7 @@ const { debug } = require('../lib/log');
 
 debug(`jen v${pkg.version}`);
 
-jen
-  .version(pkg.version, '-v, --version')
-  .description('Jenkins personal assistant');
+jen.version(pkg.version, '-v, --version').description('Jenkins personal assistant');
 
 jen
   .command('init')

@@ -9,7 +9,9 @@ const store = new Conf();
 module.exports = async function init() {
   // not a git repository
   if (!isGitRepository()) {
-    console.log(yellow('jen has no power here! Please execute jen commands inside the git dir.'));
+    console.log(
+      yellow('jen has no power here! Please execute jen commands inside the git dir.')
+    );
     process.exit();
   }
 

@@ -40,24 +40,30 @@ function updateStoreWithNewConfiguration(storeKey, oldConfig, updatedConfig) {
 module.exports = async function config(options = {}) {
   // not a git repository
   if (!isGitRepository()) {
-    console.log(yellow('jen has no power here! Please execute jen commands inside the git dir.'));
+    console.log(
+      yellow('jen has no power here! Please execute jen commands inside the git dir.')
+    );
     process.exit();
   }
 
   const gitRootPath = getGitRootDirPath();
 
   if (!store.has(gitRootPath)) {
-    console.log(yellow(`Config is empty! Introduce jen to your project via ${bold(blue('> jen init'))}`));
+    console.log(
+      yellow(
+        `Config is empty! Introduce jen to your project via ${bold(blue('> jen init'))}`
+      )
+    );
     return;
   }
 
   const oldConfig = store.get(gitRootPath);
   const { username, token, url, job } = options;
   const updatedConfig = {
-    ...username && { username },
-    ...token && { token },
-    ...url && { url },
-    ...job && { job }
+    ...(username && { username }),
+    ...(token && { token }),
+    ...(url && { url }),
+    ...(job && { job })
   };
 
   // if options passed update configuration
