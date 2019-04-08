@@ -47,5 +47,5 @@ Commands:
 It's basic for the moment, but you can use `DEBUG_JEN=true` to log debug messages.
 
 ### Feedback
-I don't have much experience with Jenkins for the moment. So this tool does not cover all the Jenkins use cases. Initially I created this tool for myself just to display the build history. Later realized this tool will helpful to others as well (specially for my team). I really interested in hearing about your use cases, insights, and suggestions for improvement.
+I don't have much experience with Jenkins for the moment. So this tool does not cover all the Jenkins use cases. Initially I created this tool for myself just to display the build history. Later realized this tool will helpful to others as well (specially for my team). I really interested in hearing about your use cases, insights, and suggestions for improvement. Please file issues [here](https://github.com/m-sureshraj/jenni/issues)
 
