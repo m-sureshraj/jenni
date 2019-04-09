@@ -1,11 +1,14 @@
-# jenni - Beta version
+# jenni
+
+![npm](https://img.shields.io/npm/v/jenni.svg)
+
 > Jenkins personal assistant - CLI tool to interact with Jenkins server
 
 Note - jenni will only work inside the **git** repository 
 
-## Features
-> List of available features for the moment.   
-* Print Jenkins build history of a branch
+### Features
+> List of available features for the moment  
+* Print Jenkins build history of a branch.
 * Open Jenkins build in browser.
 
 ### Prerequisites
