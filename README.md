@@ -26,6 +26,13 @@ Note - jenni will only work inside the **git** repository
 ```
 Above installation will give you **globally** available `jen` command to intract with Jenkins server. 
 
+## Setup
+> Each git project will requires separate initialization.
+
+`jen init` will walk you through to initialize jenni to your project.
+
+![jen init](https://github.com/m-sureshraj/jenni/blob/master/media/jen-init.png "jen init")
+
 ## Usage
 ```
 > jen --help
@@ -46,11 +53,6 @@ Commands:
 
 ```
 
-## Setup
-> Each git project will requires separate initialization.
-
-`jen init` will walk you through to initialize jenni to your project.
-
 ## Debug
 It's basic for the moment, but you can use `DEBUG_JEN=true` to log debug messages.
 
@@ -59,5 +61,3 @@ I really interested in hearing about your use cases, insights, and suggestions f
 
 ## license
 MIT © [Sureshraj](https://github.com/m-sureshraj)
-
-
