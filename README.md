@@ -22,7 +22,7 @@ Note - jenni will only work inside the **git** repository
 
 ## Installation
 ```
-> npm i -g jenni@0.1.0-beta.0
+> npm i -g jenni
 ```
 Above installation will give you **globally** available `jen` command to intract with Jenkins server. 
 
@@ -56,7 +56,7 @@ Commands:
 | Command | Options | Description |
 | --- | --- | --- |
 | `jen init` | - | Initialize jenni to your project |
-| `jen status \| s` | - | Print branch build history |
+| ```jen status \| s``` | - | Print branch build history |
 | `jen open \| o` | Optional build number <br><br> e.g. `jen open <build number>` | Open jenkins build in browser |
 | `jen config \| c` | `--username` \| `-n` <br> `--token` \| `-t`  <br> `--url` \| `-u` <br> `--job` \| `-j` <br> <br> e.g. Reconfigure username & token <br> `jen config --username <foo> --token <bar>` | Overwrite project jenni config. Without any options it will print current config. |
 
