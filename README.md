@@ -26,6 +26,13 @@ Note - jenni will only work inside the **git** repository
 ```
 Above installation will give you **globally** available `jen` command to intract with Jenkins server. 
 
+## Setup
+> Each git project will requires separate initialization.
+
+`jen init` will walk you through to initialize jenni to your project.
+
+![jen init](https://github.com/m-sureshraj/jenni/blob/master/media/jen-init.png "jen init")
+
 ## Usage
 ```
 > jen --help
@@ -41,15 +48,17 @@ Options:
 Commands:
   init                Initialize jen
   status|s            Print branch build status
-  open|o              Open jenkins build in the browser
+  open|o              Open jenkins build in browser
   config|c [options]  Show repository jen configuration
 
 ```
 
-## Setup
-> Each git project will requires separate initialization.
-
-`jen init` will walk you through to initialize jenni to your project.
+| Command | Options | Description |
+| --- | --- | --- |
+| `jen init` | - | Initialize jenni to your project |
+| `jen status \| s` | - | Print branch build history |
+| `jen open \| o` | Optional build number <br><br> e.g. `jen open <build number>` | Open jenkins build in browser |
+| `jen config \| c` | `--username` \| `-n` <br> `--token` \| `-t`  <br> `--url` \| `-u` <br> `--job` \| `-j` <br> <br> e.g. Reconfigure username & token <br> `jen config --username <foo> --token <bar>` | Overwrite project jenni config. Without any options it will print current config. |
 
 ## Debug
 It's basic for the moment, but you can use `DEBUG_JEN=true` to log debug messages.
@@ -59,5 +68,3 @@ I really interested in hearing about your use cases, insights, and suggestions f
 
 ## license
 MIT © [Sureshraj](https://github.com/m-sureshraj)
-
-
