@@ -29,7 +29,7 @@ jen
 jen
   .command('open')
   .alias('o')
-  .description('Open jenkins build in the browser')
+  .description('Open jenkins build in browser')
   .action(option => {
     debug('Executing `open` command');
     open(option);
