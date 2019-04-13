@@ -4,7 +4,7 @@
 
 > Jenkins personal assistant - CLI tool to interact with Jenkins server
 
-![jenni in action](https://github.com/m-sureshraj/jenni/blob/master/media/jenni-in-action.png "jenni in action")
+![jenni in action](https://raw.githubusercontent.com/m-sureshraj/jenni/HEAD/media/jenni-in-action.png "jenni in action")
 
 Note - jenni will only work inside the **git** repository 
 
@@ -31,7 +31,7 @@ Above installation will give you **globally** available `jen` command to intract
 
 `jen init` will walk you through to initialize jenni to your project.
 
-![jen init](https://github.com/m-sureshraj/jenni/blob/master/media/jen-init.png "jen init")
+![jen init](https://raw.githubusercontent.com/m-sureshraj/jenni/HEAD/media/jen-init.png "jen init")
 
 ## Usage
 ```
