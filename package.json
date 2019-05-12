@@ -1,6 +1,6 @@
 {
   "name": "jenni",
-  "version": "0.1.0-beta.1",
+  "version": "0.1.2",
   "description": "CLI tool to interact with Jenkins server",
   "bin": {
     "jen": "./bin/jen.js"
@@ -38,6 +38,7 @@
   "author": "Sureshraj <m.s.suresh100@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
     "cli-table": "^0.3.1",
     "commander": "^2.19.0",
     "conf": "^3.0.0",

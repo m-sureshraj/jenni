@@ -9,7 +9,7 @@ const {
 } = require('../../lib/git-cmd');
 const { getBranchBuildHistory, getBranchJobLink } = require('../../lib/jenkins');
 const { printBuildHistory } = require('../../lib/cli-table');
-const { debug } = require('../../lib/log');
+const { logNetworkErrors } = require('../../lib/log');
 
 const spinner = ora();
 const store = new Conf();
@@ -55,7 +55,7 @@ module.exports = async function showBuildStatus() {
     console.log(`${gray('Last ' + builds.length + ' build results.')}`);
   } catch (err) {
     spinner.stop();
-    console.log(gray(err.statusMessage));
-    debug(err);
+    logNetworkErrors(err);
+    process.exit();
   }
 };
