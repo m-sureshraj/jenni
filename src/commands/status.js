@@ -9,7 +9,7 @@ const {
 } = require('../../lib/git-cmd');
 const { getBranchBuildHistory, getBranchJobLink } = require('../../lib/jenkins');
 const { printBuildHistory } = require('../../lib/cli-table');
-const { logNetworkErrors } = require('../../lib/log');
+const { logNetworkErrors, debug } = require('../../lib/log');
 
 const spinner = ora();
 const store = new Conf();
@@ -36,6 +36,7 @@ module.exports = async function showBuildStatus() {
   }
 
   const branchName = getCurrentBranchName();
+  debug(`Branch name is: ${branchName}`);
 
   try {
     spinner.start();
