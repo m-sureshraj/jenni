@@ -43,6 +43,7 @@ Jenkins personal assistant
 
 Options:
   -v, --version       output the version number
+  -d, --debug         Enable debug mode
   -h, --help          output usage information
 
 Commands:
@@ -60,9 +61,13 @@ Commands:
 | `jen config` \| `c` | `--username` \| `-n` <br> `--token` \| `-t`  <br> `--url` \| `-u` <br> `--job` \| `-j` <br> <br> e.g. Reconfigure username & token <br> `jen config --username <foo> --token <bar>` | Overwrite project jenni config. Without any options it will print current config. |
 
 ## Debug
-It's basic for the moment, but you can use `DEBUG_JEN=true` to log debug messages. E.g
+It's basic for the moment, pass `-d` or `--debug` to log debug messages. Can also be enabled by setting the environment variable `DEBUG_JEN` to `true`. E.g. 
 
 ```
+> jen status -d
+
+// OR
+
 > DEBUG_JEN=true jen status
 ```
 

@@ -1,10 +1,14 @@
+const path = require('path');
+
 const Conf = require('conf');
 const { blue, bold, yellow, gray, red, green } = require('kleur');
+
 const { isGitRepository, getGitRootDirPath } = require('../../lib/git-cmd');
 const { printConfig } = require('../../lib/cli-table');
 const { isValidUrl } = require('../../lib/util');
 const { debug } = require('../../lib/log');
 
+// todo: Make store singleton
 const store = new Conf();
 
 function updateStoreWithNewConfiguration(storeKey, oldConfig, updatedConfig) {
@@ -51,7 +55,7 @@ module.exports = async function config(options = {}) {
   if (!store.has(gitRootPath)) {
     console.log(
       yellow(
-        `Config is empty! Introduce jen to your project via ${bold(blue('> jen init'))}`
+        `Config Not Found! Introduce jen to your project via ${bold(blue('> jen init'))}`
       )
     );
     return;
@@ -74,6 +78,7 @@ module.exports = async function config(options = {}) {
   }
 
   // else just print the current config
+  console.log(yellow(`Configuration of ${path.basename(gitRootPath)}`));
   printConfig(oldConfig);
   console.log(gray('Config path - ' + store.path));
 };

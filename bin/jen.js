@@ -5,9 +5,20 @@ const pkg = require('../package.json');
 const { init, status, config, open } = require('../src');
 const { debug } = require('../lib/log');
 
-debug(`jen v${pkg.version}`);
+const args = process.argv.slice(2);
 
-jen.version(pkg.version, '-v, --version').description('Jenkins personal assistant');
+// Why manual check instead of `jen.debug`?
+// Because we have to enable the debug before initializing jen: `jen.parse(process.argv);`
+if (args.includes('-d') || args.includes('--debug')) {
+  process.env.DEBUG_JEN = true;
+}
+
+debug(`Running jen v${pkg.version}`);
+
+jen
+  .version(pkg.version, '-v, --version')
+  .description('Jenkins personal assistant')
+  .option('-d, --debug', 'Enable debug mode');
 
 jen
   .command('init')
@@ -49,7 +60,7 @@ jen
   });
 
 // print usage info if argument is empty.
-if (!process.argv.slice(2).length) {
+if (!args.length) {
   jen.outputHelp();
   process.exit(0);
 }
