@@ -5,7 +5,7 @@ const terminalLink = require('terminal-link');
 const {
   getCurrentBranchName,
   isGitRepository,
-  getGitRootDirPath
+  getGitRootDirPath,
 } = require('../../lib/git-cmd');
 const { getBranchBuildHistory, getBranchJobLink } = require('../../lib/jenkins');
 const { printBuildHistory } = require('../../lib/cli-table');

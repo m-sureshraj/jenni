@@ -20,7 +20,7 @@
     }
   },
   "lint-staged": {
-    "**/*.js": [
+    "*.js": [
       "npm run lint-fix",
       "git add"
     ]

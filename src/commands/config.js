@@ -67,7 +67,7 @@ module.exports = async function config(options = {}) {
     ...(username && { username }),
     ...(token && { token }),
     ...(url && { url }),
-    ...(job && { job })
+    ...(job && { job }),
   };
 
   // if options passed update configuration
