@@ -4,7 +4,7 @@ const Conf = require('conf');
 const {
   isGitRepository,
   getGitRootDirPath,
-  getCurrentBranchName
+  getCurrentBranchName,
 } = require('../../lib/git-cmd');
 const { getBranchJobLink } = require('../../lib/jenkins');
 const { debug } = require('../../lib/log');
