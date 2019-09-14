@@ -1,8 +1,8 @@
 # jenni
 
-![npm](https://img.shields.io/npm/v/jenni.svg)
-
 > Jenkins personal assistant - CLI tool to interact with Jenkins server
+
+![npm](https://img.shields.io/npm/v/jenni.svg)
 
 ![jenni in action](https://raw.githubusercontent.com/m-sureshraj/jenni/HEAD/media/jenni-in-action.png "jenni in action")
 
