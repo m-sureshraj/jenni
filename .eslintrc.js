@@ -6,8 +6,8 @@ module.exports = {
     node: true,
     es6: true,
   },
-  extends: 'eslint:recommended',
-  plugins: ['prettier'],
+  extends: ['eslint:recommended', 'plugin:jest/recommended', 'plugin:jest/style'],
+  plugins: ['prettier', 'jest'],
   // 0: off, 1: warn, 2: error
   rules: {
     'prettier/prettier': 'error',
