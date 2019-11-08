@@ -1,14 +1,13 @@
 const path = require('path');
 
 const Conf = require('conf');
-const { blue, bold, yellow, gray, red, green } = require('kleur');
+const { yellow, gray, red, green } = require('kleur');
 
-const { isGitRepository, getGitRootDirPath } = require('../../lib/git-cmd');
+const { getGitRootDirPath } = require('../../lib/git-cmd');
 const { printConfig } = require('../../lib/cli-table');
 const { isValidUrl } = require('../../lib/util');
 const { debug } = require('../../lib/log');
 
-// todo: Make store singleton
 const store = new Conf();
 
 function updateStoreWithNewConfiguration(storeKey, oldConfig, updatedConfig) {
@@ -42,25 +41,7 @@ function updateStoreWithNewConfiguration(storeKey, oldConfig, updatedConfig) {
 }
 
 module.exports = async function config(options = {}) {
-  // not a git repository
-  if (!isGitRepository()) {
-    console.log(
-      yellow('jen has no power here! Please execute jen commands inside the git dir.')
-    );
-    process.exit();
-  }
-
   const gitRootPath = getGitRootDirPath();
-
-  if (!store.has(gitRootPath)) {
-    console.log(
-      yellow(
-        `Config Not Found! Introduce jen to your project via ${bold(blue('> jen init'))}`
-      )
-    );
-    return;
-  }
-
   const oldConfig = store.get(gitRootPath);
   const { username, token, url, job } = options;
   const updatedConfig = {
