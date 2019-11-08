@@ -1,20 +1,13 @@
 const Conf = require('conf');
-const { isGitRepository, getGitRootDirPath } = require('../../lib/git-cmd');
-const { yellow, green, gray } = require('kleur');
+const { green, gray } = require('kleur');
+
+const { getGitRootDirPath } = require('../../lib/git-cmd');
 const { requestJenkinsCredentials, askConfirmation } = require('../../lib/prompt');
 const { printConfig } = require('../../lib/cli-table');
 
 const store = new Conf();
 
 module.exports = async function init() {
-  // not a git repository
-  if (!isGitRepository()) {
-    console.log(
-      yellow('jen has no power here! Please execute jen commands inside the git dir.')
-    );
-    process.exit();
-  }
-
   const res = await requestJenkinsCredentials();
 
   // 3 fields are required
@@ -26,5 +19,9 @@ module.exports = async function init() {
       store.set(getGitRootDirPath(), res);
       console.log(green('Configuration successfully saved at ') + gray(store.path));
     }
+
+    // todo: Display a message when confirmation rejected
   }
+
+  // todo: Display a message when required fields are missing
 };
