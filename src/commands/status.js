@@ -3,7 +3,11 @@ const { yellow, gray, red } = require('kleur');
 const terminalLink = require('terminal-link');
 
 const { getCurrentBranchName } = require('../../lib/git-cmd');
-const { getBranchBuildHistory, getBranchJobLink } = require('../../lib/jenkins');
+const {
+  getBranchBuildHistory,
+  getJobLink,
+  constructJobTitle,
+} = require('../../lib/jenkins');
 const { printBuildHistory } = require('../../lib/cli-table');
 const { logNetworkErrors, debug } = require('../../lib/log');
 
@@ -16,18 +20,19 @@ module.exports = async function showBuildStatus() {
   try {
     spinner.start();
     const builds = await getBranchBuildHistory(branchName);
-    const jobLink = getBranchJobLink(branchName);
+    const jobTitle = constructJobTitle(branchName);
+    const jobLink = getJobLink(branchName);
     spinner.stop();
 
     // title
-    console.log(yellow('Build history of - ' + terminalLink(branchName, jobLink)));
+    console.log(yellow('Build history of - ' + terminalLink(jobTitle, jobLink)));
 
     if (!builds.length) {
       console.log(gray('No build exists for this branch!'));
       process.exit();
     }
 
-    printBuildHistory(builds, jobLink);
+    printBuildHistory(builds);
     console.log(`${gray('Last ' + builds.length + ' build results.')}`);
   } catch (err) {
     spinner.stop();
