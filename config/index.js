@@ -4,3 +4,8 @@ exports.COMMAND = {
   open: 'open',
   config: 'config',
 };
+
+exports.JOB_TYPE = {
+  WorkflowMultiBranchProject: 'WorkflowMultiBranchProject',
+  WorkflowJob: 'WorkflowJob',
+};
