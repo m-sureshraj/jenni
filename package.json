@@ -13,7 +13,8 @@
     "test:watch": "jest --watch",
     "lint": "eslint '**/*.js'",
     "lint-fix": "eslint --fix",
-    "prettier": "prettier --config ./prettier.config.js --write"
+    "prettier": "prettier --config ./prettier.config.js --write",
+    "preuninstall": "node src/scripts/pre-uninstall.js"
   },
   "husky": {
     "hooks": {
@@ -35,6 +36,7 @@
     "cli-app",
     "cli",
     "jenkins-cli",
+    "jenkins",
     "nodejs"
   ],
   "author": "Sureshraj <m.s.suresh100@gmail.com>",
