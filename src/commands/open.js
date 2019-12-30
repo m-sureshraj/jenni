@@ -1,8 +1,8 @@
 const _open = require('open');
 
-const { getCurrentBranchName } = require('../../lib/git-cmd');
-const { getJobLink } = require('../../lib/jenkins');
-const { debug } = require('../../lib/log');
+const { getCurrentBranchName } = require('../lib/git-cmd');
+const { getJobLink } = require('../lib/jenkins');
+const { debug } = require('../lib/log');
 
 module.exports = function open(buildNumber = null) {
   const branchName = getCurrentBranchName();

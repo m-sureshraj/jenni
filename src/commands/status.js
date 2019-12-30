@@ -2,14 +2,14 @@ const ora = require('ora');
 const { yellow, gray, red } = require('kleur');
 const terminalLink = require('terminal-link');
 
-const { getCurrentBranchName } = require('../../lib/git-cmd');
+const { getCurrentBranchName } = require('../lib/git-cmd');
 const {
   getBranchBuildHistory,
   getJobLink,
   constructJobTitle,
-} = require('../../lib/jenkins');
-const { printBuildHistory } = require('../../lib/cli-table');
-const { logNetworkErrors, debug } = require('../../lib/log');
+} = require('../lib/jenkins');
+const { printBuildHistory } = require('../lib/cli-table');
+const { logNetworkErrors, debug } = require('../lib/log');
 
 const spinner = ora();
 

@@ -1,4 +1,4 @@
-const { COMMAND } = require('../../config');
+const { COMMAND } = require('../config');
 
 module.exports = {
   [COMMAND.init]: require('./init'),

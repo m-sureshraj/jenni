@@ -3,11 +3,12 @@
   "version": "0.2.6",
   "description": "CLI tool to interact with Jenkins server",
   "bin": {
-    "jen": "./bin/jen.js"
+    "jen": "src/bin/jen.js"
   },
   "engines": {
     "node": ">=8.12"
   },
+  "files": ["src", "!src/**/*.spec.js"],
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",

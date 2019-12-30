@@ -2,8 +2,8 @@
 
 const jen = require('commander');
 
-const pkg = require('../package.json');
-const run = require('../src');
+const pkg = require('../../package.json');
+const run = require('../index');
 const { debug } = require('../lib/log');
 const { COMMAND } = require('../config');
 
