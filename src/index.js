@@ -1,9 +1,9 @@
 const Conf = require('conf');
 const { yellow, blue, bold } = require('kleur');
 
-const { isGitRepository, getGitRootDirPath } = require('../lib/git-cmd');
-const { COMMAND } = require('../config');
-const { debug } = require('../lib/log');
+const { isGitRepository, getGitRootDirPath } = require('./lib/git-cmd');
+const { COMMAND } = require('./config');
+const { debug } = require('./lib/log');
 const commands = require('./commands');
 
 const store = new Conf();

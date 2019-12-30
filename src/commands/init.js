@@ -1,9 +1,9 @@
 const Conf = require('conf');
 const { green, gray, red } = require('kleur');
 
-const { getGitRootDirPath } = require('../../lib/git-cmd');
-const { requestJenkinsCredentials, askConfirmation } = require('../../lib/prompt');
-const { printConfig } = require('../../lib/cli-table');
+const { getGitRootDirPath } = require('../lib/git-cmd');
+const { requestJenkinsCredentials, askConfirmation } = require('../lib/prompt');
+const { printConfig } = require('../lib/cli-table');
 
 const store = new Conf();
 

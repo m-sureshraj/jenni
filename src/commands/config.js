@@ -3,10 +3,10 @@ const path = require('path');
 const Conf = require('conf');
 const { yellow, gray, red, green } = require('kleur');
 
-const { getGitRootDirPath } = require('../../lib/git-cmd');
-const { printConfig } = require('../../lib/cli-table');
-const { isValidUrl } = require('../../lib/util');
-const { debug } = require('../../lib/log');
+const { getGitRootDirPath } = require('../lib/git-cmd');
+const { printConfig } = require('../lib/cli-table');
+const { isValidUrl } = require('../lib/util');
+const { debug } = require('../lib/log');
 
 const store = new Conf();
 
