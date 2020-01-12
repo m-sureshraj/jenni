@@ -5,4 +5,5 @@ module.exports = {
   [COMMAND.status]: require('./status'),
   [COMMAND.config]: require('./config'),
   [COMMAND.open]: require('./open'),
+  [COMMAND.build]: require('./build'),
 };

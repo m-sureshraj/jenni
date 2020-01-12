@@ -6,15 +6,17 @@
 
 ![jenni in action](https://raw.githubusercontent.com/m-sureshraj/jenni/HEAD/media/jenni-in-action.png "jenni in action")
 
-Note - jenni will only work inside the **git** repository 
+Note - jenni will only work inside the **git** repository
 
 ## Features
-* Print Jenkins build history of a branch.
+* Print Jenkins build history of a Job.
 * Show estimated remaining time for running builds.
 * Open Jenkins build in browser.
+* Trigger new builds (without parameters)
 
 ## Upcoming Features
-* Trigger or abort a build
+* Trigger new builds with parameters
+* Abort running builds
 
 ## Prerequisites
 - Make sure you have Node.js `>= v8.11` installed.
@@ -24,7 +26,7 @@ Note - jenni will only work inside the **git** repository
 ```
 > npm i -g jenni
 ```
-Above installation will give you **globally** available `jen` command to intract with Jenkins server. 
+Above installation will give you **globally** available `jen` command to intract with Jenkins server.
 
 ## Setup
 > Each git project will requires separate initialization.
@@ -47,21 +49,23 @@ Options:
   -h, --help          output usage information
 
 Commands:
-  init                Initialize jen
+  init|i              Initialize jen
   status|s            Print branch build status
   open|o              Open jenkins build in browser
+  build|b             Trigger a new build
   config|c [options]  Show repository jen configuration
 ```
 
 | Command | Options | Description |
 | --- | --- | --- |
-| `jen init` | - | Initialize jenni to your project |
+| `jen init` \| `i` | - | Initialize jenni to your project |
 | `jen status` \| `s` | - | Print branch build history |
 | `jen open` \| `o` | Optional build number <br><br> e.g. `jen open <build number>` | Open jenkins build in browser |
+| `jen build` \| `b` | - | Trigger a new build |
 | `jen config` \| `c` | `--username` \| `-n` <br> `--token` \| `-t`  <br> `--url` \| `-u` <br> `--job` \| `-j` <br> <br> e.g. Reconfigure username & token <br> `jen config --username <foo> --token <bar>` | Overwrite project jenni config. Without any options it will print current config. |
 
 ## Debug
-It's basic for the moment, pass `-d` or `--debug` to log debug messages. Can also be enabled by setting the environment variable `DEBUG_JEN` to `true`. E.g. 
+It's basic for the moment, pass `-d` or `--debug` to log debug messages. Can also be enabled by setting the environment variable `DEBUG_JEN` to `true`. E.g.
 
 ```
 > jen status -d

@@ -24,6 +24,7 @@ jen
 
 jen
   .command(COMMAND.init)
+  .alias('i')
   .description('Initialize jen')
   .action(() => {
     run(COMMAND.init);
@@ -43,6 +44,14 @@ jen
   .description('Open jenkins build in browser')
   .action(option => {
     run(COMMAND.open, option);
+  });
+
+jen
+  .command(COMMAND.build)
+  .alias('b')
+  .description('Trigger a new build')
+  .action(() => {
+    run(COMMAND.build);
   });
 
 jen

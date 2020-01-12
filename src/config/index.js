@@ -3,6 +3,7 @@ exports.COMMAND = {
   status: 'status',
   open: 'open',
   config: 'config',
+  build: 'build',
 };
 
 exports.JOB_TYPE = {
