@@ -6,6 +6,7 @@ const cheerio = require('cheerio');
 
 const { getGitRootDirPath } = require('./git-cmd');
 const { JOB_TYPE } = require('../config');
+const { debug } = require('./log');
 
 const store = new Conf();
 const client = got.extend({ timeout: 3000 });
@@ -103,11 +104,11 @@ function extractRemainingTimeFromHtml(html) {
   return Object.keys(data).length ? data : null;
 }
 
-function getRunningBuildsRemainingTime(baseUrl, buildId) {
+function getRunningBuildsRemainingTime(branchName, buildId) {
   // this api will return build history as a html response
   // with the `n` header we can control the results limit [n, ..., n + 1]
   // e.g. if the `buildId` is 520 then it will return all the build history from 520 to upwards
-  const url = baseUrl + '/buildHistory/ajax';
+  const url = getJobUrl(branchName) + '/buildHistory/ajax';
 
   return client
     .post(url, { headers: { n: buildId } })
@@ -152,6 +153,20 @@ function flattenNestedJobs(jobs) {
   return transformedJobs;
 }
 
+async function getBuilds(branchName) {
+  const currentTimestamp = Date.now();
+  const jobUrl = getJobUrl(branchName);
+  const { body } = await client.get(`${jobUrl}/wfapi/runs?_=${currentTimestamp}`, {
+    json: true,
+  });
+
+  return body;
+}
+
+function filterRunningBuilds(builds) {
+  return builds.filter(build => build.status === 'IN_PROGRESS');
+}
+
 exports.getJobLink = function(branchName) {
   return getJobUrl(branchName, false);
 };
@@ -171,18 +186,13 @@ exports.getJobs = async function(credentials) {
 };
 
 exports.getBranchBuildHistory = async function(branchName) {
-  const currentTimestamp = Date.now();
-  const jobUrl = getJobUrl(branchName);
-  const { body: builds } = await client.get(
-    `${jobUrl}/wfapi/runs?_=${currentTimestamp}`,
-    { json: true }
-  );
-  const runningBuilds = builds.filter(build => build.status === 'IN_PROGRESS');
+  const builds = await getBuilds(branchName);
 
+  const runningBuilds = filterRunningBuilds(builds);
   if (runningBuilds.length) {
     // `runningBuildsRemainingTime` can be a object | null
     const runningBuildsRemainingTime = await getRunningBuildsRemainingTime(
-      jobUrl,
+      branchName,
       runningBuilds.pop().id
     );
 
@@ -212,4 +222,18 @@ exports.constructJobTitle = function(branchName = '') {
     default:
       throw new Error(`Unsupported job type: ${type}`);
   }
+};
+
+exports.triggerNewBuild = function(branchName) {
+  // `?delay=0sec` to instantly trigger the build
+  const jobUrl = getJobUrl(branchName) + '/build?delay=0sec';
+  debug(`Triggering a build for: ${jobUrl}`);
+
+  return client.post(jobUrl);
+};
+
+exports.getRunningBuilds = async function(branchName) {
+  const builds = await getBuilds(branchName);
+
+  return filterRunningBuilds(builds);
 };

@@ -9,15 +9,14 @@ const store = new Conf();
 
 module.exports = async function init() {
   const response = await requestJenkinsCredentials();
-
   if (response.__cancelled__) {
     console.log(red('Aborted'));
     return;
   }
 
   printConfig(response);
-  const { confirmation } = await askConfirmation();
 
+  const { confirmation } = await askConfirmation();
   if (!confirmation) {
     console.log(red('Aborted'));
     return;

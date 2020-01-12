@@ -94,3 +94,14 @@ exports.askConfirmation = function() {
 
   return prompts(question);
 };
+
+exports.askConfirmationBeforeTriggeringNewBuild = function() {
+  const question = {
+    type: 'confirm',
+    name: 'confirmation',
+    message: 'A build is already in progress. Do you like to create another build?',
+    initial: false,
+  };
+
+  return prompts(question);
+};

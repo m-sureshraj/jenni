@@ -6,6 +6,8 @@ const {
   getJobLink,
   constructJobTitle,
   getBranchBuildHistory,
+  triggerNewBuild,
+  getRunningBuilds,
 } = require('../jenkins');
 const { getGitRootDirPath } = require('../git-cmd');
 const { JOB_TYPE } = require('../../config');
@@ -288,5 +290,65 @@ describe('getBranchBuildHistory', () => {
       { ...mockedSuccessfulBuild, __meta__: undefined },
       { ...mockedInProgressBuild, __meta__: undefined },
     ]);
+  });
+});
+
+describe('triggerNewBuild', () => {
+  const branchName = 'feature-z';
+  let mockServer;
+  let urlToTriggerNewBuild;
+  beforeAll(() => {
+    mockServer = nock(jenkinsCredentials.url);
+    urlToTriggerNewBuild = `${jobConfigPath}/job/${branchName}/build?delay=0sec`;
+  });
+
+  it('should trigger a new build', async () => {
+    mockServer.post(urlToTriggerNewBuild).reply(201);
+    await triggerNewBuild(branchName);
+  });
+});
+
+describe('getRunningBuilds', () => {
+  const now = 1576509919879;
+  const branchName = 'feature-z';
+  const mockedSuccessfulBuild = {
+    id: '1',
+    name: '#1',
+    status: 'SUCCESS',
+    durationMillis: 73302,
+    startTimeMillis: 1573097554175,
+    endTimeMillis: 1573097627477,
+  };
+  const mockedInProgressBuild = {
+    id: '3',
+    name: '#3',
+    status: 'IN_PROGRESS',
+    startTimeMillis: 1576723393062,
+    endTimeMillis: 1576723407034,
+    durationMillis: 13972,
+  };
+
+  let mockServer;
+  let urlToFetchBuilds;
+  beforeAll(() => {
+    mockServer = nock(jenkinsCredentials.url);
+    urlToFetchBuilds = `${jobConfigPath}/job/${branchName}/wfapi/runs?_=${now}`;
+  });
+
+  beforeEach(() => {
+    jest.spyOn(global.Date, 'now').mockImplementationOnce(() => now);
+  });
+
+  afterAll(() => {
+    Date.now.mockReset();
+  });
+
+  it('should fetch running builds', async () => {
+    mockServer
+      .get(urlToFetchBuilds)
+      .reply(200, [mockedSuccessfulBuild, mockedInProgressBuild]);
+    const builds = await getRunningBuilds(branchName);
+
+    expect(builds).toEqual([mockedInProgressBuild]);
   });
 });
