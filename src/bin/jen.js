@@ -57,11 +57,13 @@ jen
 jen
   .command(COMMAND.config)
   .alias('c')
-  .description('Show repository jen configuration')
+  .description('Show or Update repository configuration')
   .option('-n, --username <username>', 'Jenkins username')
   .option('-t, --token <token>', 'Jenkins api-token')
-  .option('-u, --url <url>', 'Jenkins url')
-  .option('-j, --job <job>', 'Current repo base job')
+  .option('-u, --url <url>', 'Jenkins base URL')
+  .option('--job-name <jobname>', 'Job name')
+  .option('--job-path <jobpath>', 'Job path')
+  .option('--job-type <jobtype>', 'Job type')
   .action(options => {
     run(COMMAND.config, options);
   });

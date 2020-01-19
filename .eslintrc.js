@@ -10,7 +10,8 @@ module.exports = {
   plugins: ['prettier', 'jest'],
   // 0: off, 1: warn, 2: error
   rules: {
-    'prettier/prettier': 'error',
-    'no-console': 'off',
+    'prettier/prettier': 2,
+    'no-console': 0,
+    'prefer-template': 2,
   },
 };

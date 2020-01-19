@@ -108,7 +108,7 @@ function getRunningBuildsRemainingTime(branchName, buildId) {
   // this api will return build history as a html response
   // with the `n` header we can control the results limit [n, ..., n + 1]
   // e.g. if the `buildId` is 520 then it will return all the build history from 520 to upwards
-  const url = getJobUrl(branchName) + '/buildHistory/ajax';
+  const url = `${getJobUrl(branchName)}/buildHistory/ajax`;
 
   return client
     .post(url, { headers: { n: buildId } })
@@ -226,7 +226,7 @@ exports.constructJobTitle = function(branchName = '') {
 
 exports.triggerNewBuild = function(branchName) {
   // `?delay=0sec` to instantly trigger the build
-  const jobUrl = getJobUrl(branchName) + '/build?delay=0sec';
+  const jobUrl = `${getJobUrl(branchName)}/build?delay=0sec`;
   debug(`Triggering a build for: ${jobUrl}`);
 
   return client.post(jobUrl);

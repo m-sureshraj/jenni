@@ -1,7 +1,7 @@
 const path = require('path');
 
 const Conf = require('conf');
-const { yellow, gray, red, green } = require('kleur');
+const { yellow, gray, green } = require('kleur');
 
 const { getGitRootDirPath } = require('../lib/git-cmd');
 const { printConfig } = require('../lib/cli-table');
@@ -10,56 +10,69 @@ const { debug } = require('../lib/log');
 
 const store = new Conf();
 
-function updateStoreWithNewConfiguration(storeKey, oldConfig, updatedConfig) {
-  debug({ storeKey, oldConfig, updatedConfig });
+function validateConfiguration(config) {
   let value = '';
 
-  // validation
-  Object.entries(updatedConfig).forEach(([k, v]) => {
-    value = v.trim();
+  Object.entries(config).forEach(([k, v]) => {
+    if (typeof v === 'object') {
+      validateConfiguration(v);
+    } else {
+      value = v.trim();
 
-    if (k === 'url') {
-      if (!isValidUrl(value)) {
-        console.log(red('Invalid URL ') + v);
+      if (k === 'url') {
+        if (!isValidUrl(value)) {
+          console.log(`Invalid URL: ${v}`);
+          process.exit();
+        }
+      }
+
+      if (!value) {
+        console.log(`Argument "${yellow(k)}" value is invalid ${v}`);
         process.exit();
       }
-    }
 
-    if (!value) {
-      console.log(red('Argument ') + yellow(`"${k}"`) + red(' is invalid ') + v);
-      process.exit();
+      config[k] = value;
     }
+  });
+}
 
-    updatedConfig[k] = value;
+function updateStoreWithNewConfiguration(storeKey, oldConfig, updatedConfig) {
+  debug({ storeKey, oldConfig, updatedConfig });
+  validateConfiguration(updatedConfig);
+  const mergedConfig = Object.assign({}, oldConfig, {
+    ...updatedConfig,
+    job: Object.assign({}, oldConfig.job, updatedConfig.job),
   });
 
-  const mergedConfig = Object.assign({}, oldConfig, updatedConfig);
   store.set(storeKey, mergedConfig);
-
   console.log(green('Configuration successfully updated'));
   printConfig(mergedConfig);
 }
 
-module.exports = async function config(options = {}) {
+module.exports = function config(options = {}) {
   const gitRootPath = getGitRootDirPath();
   const oldConfig = store.get(gitRootPath);
-  const { username, token, url, job } = options;
+  const { username, token, url, jobName, jobPath, jobType } = options;
+  const job = {
+    ...(jobName && { name: jobName }),
+    ...(jobPath && { path: jobPath }),
+    ...(jobType && { type: jobType }),
+  };
   const updatedConfig = {
     ...(username && { username }),
     ...(token && { token }),
     ...(url && { url }),
-    ...(job && { job }),
+    ...(Object.keys(job).length && { job }),
   };
 
-  // if options passed update configuration
   if (Object.keys(updatedConfig).length) {
     debug('updating old configuration');
     updateStoreWithNewConfiguration(gitRootPath, oldConfig, updatedConfig);
     return;
   }
 
-  // else just print the current config
+  // print the current config
   console.log(yellow(`Configuration of ${path.basename(gitRootPath)}`));
   printConfig(oldConfig);
-  console.log(gray('Config path - ' + store.path));
+  console.log(gray(`Config path - ${store.path}`));
 };
