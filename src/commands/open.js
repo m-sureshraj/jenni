@@ -10,9 +10,9 @@ module.exports = function open(buildNumber = null) {
 
   // if the argument is empty, commander will pass the default options object
   if (buildNumber && typeof buildNumber !== 'object') {
-    url += '/' + buildNumber;
+    url += `/${buildNumber}`;
   }
 
-  debug('Opening - ' + url);
+  debug(`Opening - ${url}`);
   _open(url);
 };

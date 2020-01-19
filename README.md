@@ -53,7 +53,7 @@ Commands:
   status|s            Print branch build status
   open|o              Open jenkins build in browser
   build|b             Trigger a new build
-  config|c [options]  Show repository jen configuration
+  config|c [options]  Show or Update repository configuration
 ```
 
 | Command | Options | Description |
@@ -62,7 +62,7 @@ Commands:
 | `jen status` \| `s` | - | Print branch build history |
 | `jen open` \| `o` | Optional build number <br><br> e.g. `jen open <build number>` | Open jenkins build in browser |
 | `jen build` \| `b` | - | Trigger a new build |
-| `jen config` \| `c` | `--username` \| `-n` <br> `--token` \| `-t`  <br> `--url` \| `-u` <br> `--job` \| `-j` <br> <br> e.g. Reconfigure username & token <br> `jen config --username <foo> --token <bar>` | Overwrite project jenni config. Without any options it will print current config. |
+| `jen config` \| `c` | `--username` \| `-n` <br> `--token` \| `-t`  <br> `--url` \| `-u` <br> `--job-name` <br> `--job-path` <br> `--job-type` <br> <br> e.g. Reconfigure username & token <br> `jen config --username <foo> --token <bar>` | Overwrite project jenni config. Without any options it will print current config. |
 
 ## Debug
 It's basic for the moment, pass `-d` or `--debug` to log debug messages. Can also be enabled by setting the environment variable `DEBUG_JEN` to `true`. E.g.

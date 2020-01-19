@@ -25,7 +25,7 @@ module.exports = async function showBuildStatus() {
     spinner.stop();
 
     // title
-    console.log(yellow('Build history of - ' + terminalLink(jobTitle, jobLink)));
+    console.log(yellow(`Build history of - ${terminalLink(jobTitle, jobLink)}`));
 
     if (!builds.length) {
       console.log(gray('No build exists for this branch!'));
@@ -33,7 +33,7 @@ module.exports = async function showBuildStatus() {
     }
 
     printBuildHistory(builds);
-    console.log(`${gray('Last ' + builds.length + ' build results.')}`);
+    console.log(`${gray(`Last ${builds.length} build results.`)}`);
   } catch (err) {
     spinner.stop();
 

@@ -59,9 +59,9 @@ exports.formatMs = function(ms) {
   const hours = Math.floor(ms / (1000 * 60 * 60));
   const formattedTime = [];
 
-  if (hours) formattedTime.push(hours.toString(10).padStart(2, '0') + ' hrs');
-  if (minutes) formattedTime.push(minutes.toString(10).padStart(2, '0') + ' min');
-  if (seconds) formattedTime.push(seconds.toString(10).padStart(2, '0') + ' sec');
+  if (hours) formattedTime.push(`${hours.toString(10).padStart(2, '0')} hrs`);
+  if (minutes) formattedTime.push(`${minutes.toString(10).padStart(2, '0')} min`);
+  if (seconds) formattedTime.push(`${seconds.toString(10).padStart(2, '0')} sec`);
 
   return formattedTime.join(', ');
 };
