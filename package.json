@@ -1,6 +1,6 @@
 {
   "name": "jenni",
-  "version": "0.2.6",
+  "version": "1.0.0",
   "description": "CLI tool to interact with Jenkins server",
   "bin": {
     "jen": "src/bin/jen.js"
