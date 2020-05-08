@@ -111,7 +111,7 @@ It's basic for the moment, pass `-d` or `--debug` to log debug messages. Can als
     So if your job is deeply nested, you should manually configure the job. [Follow this guide](JOB_CONFIGURATION.md).
 
 ## Feedback
-I'm no expert Jenkins user 🤫. I'm building this tool while learning Jenkins concepts. I'm really interested in hearing your use cases, insights, and suggestions for improvements. Please file issues [here](https://github.com/m-sureshraj/jenni/issues)
+I'm no expert Jenkins user 🤫. I'm building this tool while learning Jenkins concepts. I'm really interested in hearing your use cases, insights, and suggestions for improvements.
 
 ## Similar Projects
 There're a few similar project you can found below:
