@@ -113,5 +113,9 @@ It's basic for the moment, pass `-d` or `--debug` to log debug messages. Can als
 ## Feedback
 I'm no expert Jenkins user 🤫. I'm building this tool while learning Jenkins concepts. I'm really interested in hearing your use cases, insights, and suggestions for improvements. Please file issues [here](https://github.com/m-sureshraj/jenni/issues)
 
+## Similar Projects
+There're a few similar project you can found below:
+* [jenkins-cli](https://github.com/jenkins-zh/jenkins-cli)
+
 ## license
 MIT © [Sureshraj](https://github.com/m-sureshraj)
