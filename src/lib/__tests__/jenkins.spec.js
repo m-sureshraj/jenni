@@ -8,9 +8,11 @@ const {
   getBranchBuildHistory,
   triggerNewBuild,
   getRunningBuilds,
+  getConsoleText,
 } = require('../jenkins');
 const { getGitRootDirPath } = require('../git-cmd');
 const { JOB_TYPE } = require('../../config');
+const { streamToString } = require('../util');
 
 jest.mock('../git-cmd');
 jest.mock('conf');
@@ -350,5 +352,24 @@ describe('getRunningBuilds', () => {
     const builds = await getRunningBuilds(branchName);
 
     expect(builds).toEqual([mockedInProgressBuild]);
+  });
+
+  it('should return stream with text content', async () => {
+    const consoleOutput = 'text output from build --here--';
+    mockServer
+      .get(`${jobConfigPath}/job/${branchName}/lastBuild/consoleText`)
+      .reply(200, consoleOutput);
+
+    const st = await getConsoleText(branchName);
+
+    expect(await streamToString(st)).toEqual(consoleOutput);
+  });
+
+  it('should throw error if given build id does not exist', async () => {
+    mockServer
+      .get(urlToFetchBuilds)
+      .reply(200, [mockedSuccessfulBuild, mockedInProgressBuild]);
+
+    await expect(getConsoleText(branchName, '999')).rejects.toThrow();
   });
 });

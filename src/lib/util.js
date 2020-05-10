@@ -69,3 +69,11 @@ exports.formatMs = function(ms) {
 exports.removeTrailingSlash = function(str = '') {
   return str.endsWith('/') ? str.substr(0, str.length - 1) : str;
 };
+
+exports.streamToString = async function streamToString(readable) {
+  let result = '';
+  for await (const chunk of readable) {
+    result += chunk;
+  }
+  return result;
+};

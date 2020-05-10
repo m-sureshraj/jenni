@@ -55,6 +55,15 @@ jen
   });
 
 jen
+  .command(COMMAND.output)
+  .alias('co')
+  .description('Show console output')
+  .option('--build <build-id>', 'Build id')
+  .action(options => {
+    run(COMMAND.output, options);
+  });
+
+jen
   .command(COMMAND.config)
   .alias('c')
   .description('Show or Update repository configuration')
