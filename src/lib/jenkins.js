@@ -168,6 +168,14 @@ function filterRunningBuilds(builds) {
   return builds.filter(build => build.status === 'IN_PROGRESS');
 }
 
+async function assertBuildExists(branchName, build) {
+  const builds = await getBuilds(branchName);
+
+  if (builds.every(b => b.id !== build)) {
+    throw new Error(`Cannot find build of id ${build}`);
+  }
+}
+
 exports.getJobLink = function(branchName) {
   return getJobUrl(branchName, false);
 };
@@ -237,6 +245,14 @@ exports.getRunningBuilds = async function(branchName) {
   const builds = await getBuilds(branchName);
 
   return filterRunningBuilds(builds);
+};
+
+exports.getConsoleText = async function(branchName, build) {
+  if (build) await assertBuildExists(branchName, build);
+
+  const jobUrl = `${getJobUrl(branchName)}/${build || 'lastBuild'}/consoleText`;
+
+  return client.stream(jobUrl);
 };
 
 exports.createProgressiveTextStream = function(branchName, buildId) {

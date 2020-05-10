@@ -13,5 +13,6 @@ module.exports = {
     'prettier/prettier': 2,
     'no-console': 0,
     'prefer-template': 2,
+    curly: [2, 'multi-line'],
   },
 };

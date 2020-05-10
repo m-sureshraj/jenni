@@ -4,6 +4,7 @@ exports.COMMAND = {
   open: 'open',
   config: 'config',
   build: 'build',
+  console: 'console',
 };
 
 exports.JOB_TYPE = {

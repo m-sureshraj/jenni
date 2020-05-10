@@ -6,4 +6,5 @@ module.exports = {
   [COMMAND.config]: require('./config'),
   [COMMAND.open]: require('./open'),
   [COMMAND.build]: require('./build'),
+  [COMMAND.console]: require('./console'),
 };

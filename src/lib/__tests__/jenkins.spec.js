@@ -11,11 +11,13 @@ const {
   getBranchBuildHistory,
   triggerNewBuild,
   getRunningBuilds,
+  getConsoleText,
   getQueueItem,
   createProgressiveTextStream,
 } = require('../jenkins');
 const { getGitRootDirPath } = require('../git-cmd');
 const { JOB_TYPE } = require('../../config');
+const { streamToString } = require('../../test-helper');
 
 jest.mock('../git-cmd');
 jest.mock('conf');
@@ -357,6 +359,64 @@ describe('getRunningBuilds', () => {
     const builds = await getRunningBuilds(branchName);
 
     expect(builds).toEqual([mockedInProgressBuild]);
+  });
+});
+
+describe('getConsoleText', () => {
+  const now = 1576509919879;
+  const branchName = 'feature-z';
+  const mockedSuccessfulBuild = {
+    id: '1',
+    name: '#1',
+    status: 'SUCCESS',
+    durationMillis: 73302,
+    startTimeMillis: 1573097554175,
+    endTimeMillis: 1573097627477,
+  };
+  const mockedInProgressBuild = {
+    id: '3',
+    name: '#3',
+    status: 'IN_PROGRESS',
+    startTimeMillis: 1576723393062,
+    endTimeMillis: 1576723407034,
+    durationMillis: 13972,
+  };
+
+  let mockServer;
+  let urlToFetchBuilds;
+  beforeAll(() => {
+    mockServer = nock(jenkinsCredentials.url);
+    urlToFetchBuilds = `${jobConfigPath}/job/${branchName}/wfapi/runs?_=${now}`;
+  });
+
+  beforeEach(() => {
+    jest.spyOn(global.Date, 'now').mockImplementationOnce(() => now);
+  });
+
+  afterAll(() => {
+    Date.now.mockReset();
+  });
+
+  it('should return stream with text content', async () => {
+    const consoleOutput = 'text output from build --here--';
+    mockServer
+      .get(`${jobConfigPath}/job/${branchName}/lastBuild/consoleText`)
+      .reply(200, consoleOutput);
+
+    const st = await getConsoleText(branchName);
+
+    expect(await streamToString(st)).toEqual(consoleOutput);
+  });
+
+  it('should throw error if given build id does not exist', async () => {
+    const buildId = 404;
+    mockServer
+      .get(urlToFetchBuilds)
+      .reply(200, [mockedSuccessfulBuild, mockedInProgressBuild]);
+
+    await expect(getConsoleText(branchName, buildId)).rejects.toThrow(
+      `Cannot find build of id ${buildId}`
+    );
   });
 });
 

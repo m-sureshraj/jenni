@@ -11,7 +11,7 @@ function logNetworkErrors(err = {}) {
     return;
   }
 
-  console.log(red(err.statusMessage || err.name));
+  console.log(red(err.statusMessage || err.message || err.name));
   debug(err);
 }
 
