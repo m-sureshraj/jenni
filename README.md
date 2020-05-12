@@ -3,6 +3,7 @@
 > Jenkins personal assistant - CLI tool to interact with Jenkins server
 
 ![npm](https://img.shields.io/npm/v/jenni.svg)
+[![Build Status](https://travis-ci.org/m-sureshraj/jenni.svg?branch=master)](https://travis-ci.org/m-sureshraj/jenni)
 
 ![jenni in action](https://raw.githubusercontent.com/m-sureshraj/jenni/HEAD/media/jenni-in-action.png "jenni in action")
 
