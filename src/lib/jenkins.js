@@ -7,6 +7,7 @@ const cheerio = require('cheerio');
 const { getGitRootDirPath } = require('./git-cmd');
 const { JOB_TYPE } = require('../config');
 const { debug } = require('./log');
+const StreamProgressiveText = require('./stream-progressive-text');
 
 const store = new Conf();
 const client = got.extend({ timeout: 3000 });
@@ -236,4 +237,65 @@ exports.getRunningBuilds = async function(branchName) {
   const builds = await getBuilds(branchName);
 
   return filterRunningBuilds(builds);
+};
+
+exports.createProgressiveTextStream = function(branchName, buildId) {
+  if (!buildId) throw Error('Invalid build id');
+
+  const url = `${getJobUrl(branchName)}/${buildId}/logText/progressiveText`;
+
+  return new StreamProgressiveText(url);
+};
+
+/* Notes related to queue (https://stackoverflow.com/a/45514691/2967670)
+ * If a build has not yet started, the build information will be blank.
+ * Once a build has started, Jenkins will remove the queue item after 5 minutes. */
+exports.getQueueItem = async function(itemNumber, retryUntilBuildFound = false) {
+  if (!itemNumber) throw Error('Invalid queue item number');
+
+  const url = `${getBaseUrl()}/queue/item/${itemNumber}/api/json`;
+  const { body } = await client.get(url, { json: true });
+
+  if (body.executable || !retryUntilBuildFound) {
+    return body;
+  }
+
+  debug(
+    'Unable to find the build information from the queue item on the initial attempt'
+  );
+  const retryDelayInMs = 1000;
+  const maximumRetryAttempts = 3;
+  let attempts = 0;
+
+  return new Promise((resolve, reject) => {
+    function _getQueueItem() {
+      attempts++;
+      debug(`getQueueItem attempt: ${attempts}`);
+
+      client
+        .get(url, { json: true })
+        .then(({ body }) => {
+          if (body.executable) return resolve(body);
+
+          if (attempts > maximumRetryAttempts) {
+            return reject(
+              'Maximum retry attempts reached. Unable to find the build information from the queue item'
+            );
+          }
+
+          setTimeout(() => {
+            debug(
+              `Scheduling an event to retrieve queue item after: ${retryDelayInMs *
+                attempts} ms`
+            );
+            _getQueueItem();
+          }, retryDelayInMs * attempts);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    }
+
+    return _getQueueItem();
+  });
 };
