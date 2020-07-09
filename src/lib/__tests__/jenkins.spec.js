@@ -1,3 +1,6 @@
+const EventEmitter = require('events');
+const { parse } = require('url');
+
 const nock = require('nock');
 const Conf = require('conf');
 
@@ -8,12 +11,16 @@ const {
   getBranchBuildHistory,
   triggerNewBuild,
   getRunningBuilds,
+  getQueueItem,
+  createProgressiveTextStream,
 } = require('../jenkins');
 const { getGitRootDirPath } = require('../git-cmd');
 const { JOB_TYPE } = require('../../config');
 
 jest.mock('../git-cmd');
 jest.mock('conf');
+
+const EXTENDED_TIMEOUT = 8000;
 
 const jenkinsCredentials = {
   username: 'bingo',
@@ -350,5 +357,259 @@ describe('getRunningBuilds', () => {
     const builds = await getRunningBuilds(branchName);
 
     expect(builds).toEqual([mockedInProgressBuild]);
+  });
+});
+
+describe('getQueueItem', () => {
+  const response = {
+    _class: 'hudson.model.Queue$LeftItem',
+    actions: [
+      {
+        _class: 'hudson.model.CauseAction',
+        causes: [
+          {
+            _class: 'hudson.model.Cause$UserIdCause',
+            shortDescription: 'Started by user M.Sureshraj',
+            userId: 'suresh',
+            userName: 'M.Sureshraj',
+          },
+        ],
+      },
+    ],
+    blocked: false,
+    buildable: false,
+    id: 23,
+    inQueueSince: 1592732838686,
+    params: '',
+    stuck: false,
+    task: {
+      _class: 'org.jenkinsci.plugins.workflow.job.WorkflowJob',
+      name: 'pipeline type jenkins project',
+      url: 'http://localhost:8080/job/pipeline%20type%20jenkins%20project/',
+      color: 'blue',
+    },
+    url: 'queue/item/23/',
+    why: null,
+    cancelled: false,
+    executable: {
+      _class: 'org.jenkinsci.plugins.workflow.job.WorkflowRun',
+      number: 12,
+      url: 'http://localhost:8080/job/pipeline%20type%20jenkins%20project/12/',
+    },
+  };
+  const responseWithoutBuildInfo = {
+    ...response,
+  };
+  delete responseWithoutBuildInfo.executable;
+
+  let mockServer;
+  const queuedItemNumber = 100;
+  let url;
+  beforeAll(() => {
+    mockServer = nock(jenkinsCredentials.url);
+    url = `/queue/item/${queuedItemNumber}/api/json`;
+  });
+
+  it('should throw an error for invalid queue item number', async () => {
+    const queuedItemNumber = null;
+
+    await expect(getQueueItem(queuedItemNumber)).rejects.toThrow(
+      'Invalid queue item number'
+    );
+  });
+
+  it('should throw an error when request fails', async () => {
+    mockServer.get(url).replyWithError('some error');
+
+    await expect(getQueueItem(queuedItemNumber)).rejects.toThrow();
+  });
+
+  it('initial attempt should return the fetched item if it contains build information', async () => {
+    mockServer.get(url).reply(200, response);
+    const queueItem = await getQueueItem(queuedItemNumber);
+
+    expect(queueItem).toEqual(response);
+  });
+
+  it(
+    'initial attempt should return the fetched item regardless of the build information existence' +
+      'when `retryUntilBuildFound` param is false',
+    async () => {
+      mockServer.get(url).reply(200, responseWithoutBuildInfo);
+
+      const retryUntilBuildFound = false;
+      const queueItem = await getQueueItem(queuedItemNumber, retryUntilBuildFound);
+
+      expect(queueItem).toEqual(responseWithoutBuildInfo);
+    }
+  );
+
+  it(
+    'when `retryUntilBuildFound` param is true, it should retry when it could not find the build information',
+    async () => {
+      mockServer
+        .get(url)
+        .times(4)
+        .reply(200, responseWithoutBuildInfo)
+        .get(url)
+        .reply(200, response);
+
+      const retryUntilBuildFound = true;
+      const queueItem = await getQueueItem(queuedItemNumber, retryUntilBuildFound);
+
+      expect(queueItem).toEqual(response);
+    },
+    EXTENDED_TIMEOUT
+  );
+
+  it(
+    'should throw an error if max retry attempts reached',
+    () => {
+      mockServer
+        .get(url)
+        .times(5)
+        .reply(200, responseWithoutBuildInfo);
+
+      const retryUntilBuildFound = true;
+      return expect(getQueueItem(queuedItemNumber, retryUntilBuildFound)).rejects.toMatch(
+        'Maximum retry attempts reached. Unable to find the build information from the queue item'
+      );
+    },
+    EXTENDED_TIMEOUT
+  );
+
+  it('should throw an error when request fails inside the retry phase', async () => {
+    mockServer
+      .get(url)
+      .reply(200, responseWithoutBuildInfo)
+      .get(url)
+      .replyWithError('some error');
+
+    const retryUntilBuildFound = true;
+    return expect(getQueueItem(queuedItemNumber, retryUntilBuildFound)).rejects.toThrow();
+  });
+});
+
+describe('createProgressiveTextStream', () => {
+  const branchName = 'foo';
+  const buildId = 100;
+
+  let mockServer;
+  let url;
+  beforeAll(() => {
+    mockServer = nock(jenkinsCredentials.url);
+    url = `${jobConfigPath}/job/${branchName}/${buildId}/logText/progressiveText`;
+  });
+
+  it('should throw an error for invalid id', () => {
+    const branchName = 'branch-x';
+    const buildId = null;
+
+    expect(() => {
+      createProgressiveTextStream(branchName, buildId);
+    }).toThrow('Invalid build id');
+  });
+
+  it('should return an event emitter to retrieve the logs progressively', done => {
+    mockServer
+      .get(url)
+      .query(true)
+      .reply(200, 'hello', {
+        'x-text-size': 1000,
+      });
+
+    const stream = createProgressiveTextStream(branchName, buildId);
+
+    expect(stream).toBeInstanceOf(EventEmitter);
+
+    process.nextTick(() => {
+      done();
+    });
+  });
+
+  it('should emit logs progressively', done => {
+    const responses = {
+      0: { text: 'foo', hasMore: true, size: 3 },
+      3: { text: 'foo bar', hasMore: true, size: 6 },
+      6: { text: 'foo bar baz', size: 9 },
+    };
+
+    mockServer
+      .get(url)
+      .times(3)
+      .query(true)
+      .reply(uri => {
+        const { start } = parse(uri, true).query;
+        const response = responses[start];
+
+        return [
+          200,
+          response.text,
+          {
+            'x-text-size': response.size,
+            ...(response.hasMore && { 'x-more-data': true }),
+          },
+        ];
+      });
+
+    const stream = createProgressiveTextStream(branchName, buildId);
+    let logs = [];
+
+    stream.on('data', text => {
+      logs.push(text);
+    });
+
+    stream.on('end', () => {
+      expect(logs).toHaveLength(3);
+      expect(logs.join(', ')).toBe('foo, foo bar, foo bar baz');
+      done();
+    });
+
+    stream.on('error', error => {
+      done(error);
+    });
+  });
+
+  it('should end the stream if it encountered any errors while emitting logs', done => {
+    const responses = {
+      0: { text: 'foo', hasMore: true, size: 3 },
+      3: { text: 'foo bar', hasMore: true, size: 6 },
+      6: { text: 'foo bar baz', size: 9 },
+    };
+
+    mockServer
+      .get(url)
+      .times(2)
+      .query(true)
+      .reply(uri => {
+        const { start } = parse(uri, true).query;
+        const response = responses[start];
+
+        return [
+          200,
+          response.text,
+          {
+            'x-text-size': response.size,
+            ...(response.hasMore && { 'x-more-data': true }),
+          },
+        ];
+      })
+      .get(url)
+      .query(true)
+      .replyWithError('boom!');
+
+    const stream = createProgressiveTextStream(branchName, buildId);
+    let logs = [];
+
+    stream.on('data', text => {
+      logs.push(text);
+    });
+
+    stream.on('error', error => {
+      expect(logs).toHaveLength(2);
+      expect(logs.join(', ')).toBe('foo, foo bar');
+      expect(error.message).toBe('boom!');
+      done();
+    });
   });
 });

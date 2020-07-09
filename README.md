@@ -12,8 +12,9 @@ Note - jenni will only work inside the **git** repository
 ## Features
 * Print Jenkins build history of a Job.
 * Show estimated remaining time for running builds.
-* Open Jenkins build in browser.
-* Trigger new builds (without parameters)
+* Open Jenkins build in the browser.
+* Trigger new builds. (without parameters)
+* Watch the console output after triggering a build.
 
 ## Upcoming Features
 * Trigger new builds with parameters
@@ -68,16 +69,16 @@ Commands:
   init|i              Initialize jen
   status|s            Print branch build status
   open|o              Open jenkins build in browser
-  build|b             Trigger a new build
+  build|b [options]   Trigger a new build
   config|c [options]  Show or Update repository configuration
 ```
 
 | Command&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Options | Description |
 | --- | --- | --- |
-| `jen init` \| `i` | - | Initialize jenni to your project |
-| `jen status` \| `s` | - | Print branch build history |
-| `jen open` \| `o` | Optional build number <br> e.g. `jen open <build number>` | Open jenkins build in browser |
-| `jen build` \| `b` | - | Trigger a new build |
+| `jen init` \| `i` | - | Initialize jenni to your project. |
+| `jen status` \| `s` | - | Print branch build history. |
+| `jen open` \| `o` | Optional build number <br> e.g. `jen open <build number>` | Open jenkins build in the browser. |
+| `jen build` \| `b` | `--watch` \| `-w` <br> <br> Use this option to watch the console output after triggering a build. | Trigger a new build. |
 | `jen config` \| `c` | `--username` \| `-n` <br> `--token` \| `-t`  <br> `--url` \| `-u` <br> `--job-name` <br> `--job-path` <br> `--job-type` <br> <br> e.g. Reconfigure username & token <br> `jen config --username <foo> --token <bar>` | Overwrite project jenni config. Without any options it will print current config. |
 
 ## Debug
