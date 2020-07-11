@@ -49,9 +49,10 @@ jen
 jen
   .command(COMMAND.build)
   .alias('b')
+  .option('-w, --watch', 'Watch build console output')
   .description('Trigger a new build')
-  .action(() => {
-    run(COMMAND.build);
+  .action(option => {
+    run(COMMAND.build, option);
   });
 
 jen
