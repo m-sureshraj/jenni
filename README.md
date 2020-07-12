@@ -15,6 +15,7 @@ Note - jenni will only work inside the **git** repository
 * Open Jenkins build in the browser.
 * Trigger new builds. (without parameters)
 * Watch the console output after triggering a build.
+* View specific build console output.
 
 ## Upcoming Features
 * Trigger new builds with parameters
@@ -61,16 +62,17 @@ Usage: jen [options] [command]
 Jenkins personal assistant
 
 Options:
-  -v, --version       output the version number
-  -d, --debug         Enable debug mode
-  -h, --help          output usage information
+  -v, --version         output the version number
+  -d, --debug           Enable debug mode
+  -h, --help            output usage information
 
 Commands:
-  init|i              Initialize jen
-  status|s            Print branch build status
-  open|o              Open jenkins build in browser
-  build|b [options]   Trigger a new build
-  config|c [options]  Show or Update repository configuration
+  init|i                Initialize jen
+  status|s              Print branch build status
+  open|o                Open jenkins build in browser
+  build|b [options]     Trigger a new build
+  console|co [options]  Show console output
+  config|c [options]    Show or Update repository configuration
 ```
 
 | Command&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Options | Description |

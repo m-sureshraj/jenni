@@ -170,8 +170,10 @@ function filterRunningBuilds(builds) {
 
 async function assertBuildExists(branchName, build) {
   const builds = await getBuilds(branchName);
-  if (builds.every(b => b.id !== build))
+
+  if (builds.every(b => b.id !== build)) {
     throw new Error(`Cannot find build of id ${build}`);
+  }
 }
 
 exports.getJobLink = function(branchName) {
@@ -247,7 +249,9 @@ exports.getRunningBuilds = async function(branchName) {
 
 exports.getConsoleText = async function(branchName, build) {
   if (build) await assertBuildExists(branchName, build);
+
   const jobUrl = `${getJobUrl(branchName)}/${build || 'lastBuild'}/consoleText`;
+
   return client.stream(jobUrl);
 };
 

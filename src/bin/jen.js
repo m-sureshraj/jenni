@@ -56,12 +56,12 @@ jen
   });
 
 jen
-  .command(COMMAND.output)
+  .command(COMMAND.console)
   .alias('co')
   .description('Show console output')
-  .option('--build <build-id>', 'Build id')
+  .option('-b, --build <build-id>', 'Build id')
   .action(options => {
-    run(COMMAND.output, options);
+    run(COMMAND.console, options);
   });
 
 jen
