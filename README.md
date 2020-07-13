@@ -80,7 +80,8 @@ Commands:
 | `jen init` \| `i` | - | Initialize jenni to your project. |
 | `jen status` \| `s` | - | Print branch build history. |
 | `jen open` \| `o` | Optional build number <br> e.g. `jen open <build number>` | Open jenkins build in the browser. |
-| `jen build` \| `b` | `--watch` \| `-w` <br> <br> Use this option to watch the console output after triggering a build. | Trigger a new build. |
+| `jen build` \| `b` | `--watch` \| `-w` <br><br> Use this option to watch the console output after triggering a build. | Trigger a new build. |
+| `jen console` \| `co` | `--build` \| `-b` <br><br> View specific build console output. <br> e.g. `jen console --build <build id>` | By default, this command will print the last build console output. Use `--build` option to view the specific build console output. |
 | `jen config` \| `c` | `--username` \| `-n` <br> `--token` \| `-t`  <br> `--url` \| `-u` <br> `--job-name` <br> `--job-path` <br> `--job-type` <br> <br> e.g. Reconfigure username & token <br> `jen config --username <foo> --token <bar>` | Overwrite project jenni config. Without any options it will print current config. |
 
 ## Debug
