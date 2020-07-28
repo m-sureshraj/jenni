@@ -105,3 +105,14 @@ exports.askConfirmationBeforeTriggeringNewBuild = function() {
 
   return prompts(question);
 };
+
+exports.askToSelectARunningBuild = function(runningBuilds = []) {
+  const choices = {
+    type: 'select',
+    name: 'selectedBuildId',
+    message: 'You have multiple running builds. Select a build to retrieve its console.',
+    choices: runningBuilds,
+  };
+
+  return prompts(choices);
+};
