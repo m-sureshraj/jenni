@@ -10,8 +10,7 @@
   },
   "files": [
     "src",
-    "!src/**/*.spec.js",
-    "!src/test-helper.js"
+    "!src/**/*.spec.js"
   ],
   "scripts": {
     "test": "jest",
@@ -56,7 +55,7 @@
     "open": "^6.0.0",
     "ora": "^3.2.0",
     "prompts": "^2.0.3",
-    "pump": "^3.0.0",
+    "s-ago": "^2.2.0",
     "terminal-link": "^1.2.0"
   },
   "devDependencies": {
