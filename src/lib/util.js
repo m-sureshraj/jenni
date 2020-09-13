@@ -54,6 +54,10 @@ exports.formatTimestampToDate = function(timestamp) {
 };
 
 exports.formatMs = function(ms) {
+  if (ms < 1) return `00`;
+
+  if (ms < 1000) return `${ms.toString().padStart(2, '0')} ms`;
+
   const seconds = Math.floor(ms / 1000) % 60;
   const minutes = Math.floor(ms / (1000 * 60)) % 60;
   const hours = Math.floor(ms / (1000 * 60 * 60));

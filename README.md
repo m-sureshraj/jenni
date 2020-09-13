@@ -14,7 +14,7 @@ Note - jenni will only work inside the **git** repository
 * Show estimated remaining time for running builds.
 * Open Jenkins build in the browser.
 * Trigger new builds. (without parameters)
-* Watch the console output after triggering a build.
+* Watch the console output or stage view after triggering a build.
 * View specific build console output.
 
 ## Upcoming Features
@@ -80,7 +80,7 @@ Commands:
 | `jen init` \| `i` | - | Initialize jenni to your project. |
 | `jen status` \| `s` | - | Print branch build history. |
 | `jen open` \| `o` | Optional build number <br> e.g. `jen open <build number>` | Open jenkins build in the browser. |
-| `jen build` \| `b` | `--watch` \| `-w` <br><br> Use this option to watch the console output after triggering a build. | Trigger a new build. |
+| `jen build` \| `b` | `--watch` \| `-w` <br><br> Watch the console output after triggering a build. <br><br> `--stage` \| `-s` <br><br> Watch the stage view after triggering a build. | Trigger a new build and optionally watch its console output or stage view. Note it's not possible to view console output, stage view together. |
 | `jen console` \| `co` | `--build` \| `-b` <br><br> View specific build console output. <br> e.g. `jen console --build <build id>` | By default, this command will print the last build console output. If the job has more than one running builds, then it will prompt the user to select a build to retrieve its console output. Use `--build` option to view the specific build console output. <br><br> Refer to this [flow chart](./media/console-cmd.png) that explains console command behavior. |
 | `jen config` \| `c` | `--username` \| `-n` <br> `--token` \| `-t`  <br> `--url` \| `-u` <br> `--job-name` <br> `--job-path` <br> `--job-type` <br> <br> e.g. Reconfigure username & token <br> `jen config --username <foo> --token <bar>` | Overwrite project jenni config. Without any options it will print current config. |
 
