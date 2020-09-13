@@ -1,21 +1,19 @@
-const EventEmitter = require('events');
+const { red, yellow } = require('kleur');
 
-const { red } = require('kleur');
+const { getCurrentBranchName } = require('../../../lib/git-cmd');
+const { triggerNewBuild, getRunningBuilds } = require('../../../lib/jenkins');
+const { logNetworkErrors } = require('../../../lib/log');
+const { askConfirmationBeforeTriggeringNewBuild } = require('../../../lib/prompt');
+const { WatchError } = require('../../../lib/errors');
+const reportBuildProgress = require('../watch-option');
+const reportBuildStages = require('../stage-option');
 
-const { getCurrentBranchName } = require('../../lib/git-cmd');
-const {
-  triggerNewBuild,
-  getRunningBuilds,
-  getQueueItem,
-  createProgressiveTextStream,
-} = require('../../lib/jenkins');
-const { logNetworkErrors } = require('../../lib/log');
-const { askConfirmationBeforeTriggeringNewBuild } = require('../../lib/prompt');
-
-jest.mock('../../lib/git-cmd');
-jest.mock('../../lib/log');
-jest.mock('../../lib/jenkins');
-jest.mock('../../lib/prompt');
+jest.mock('../../../lib/git-cmd');
+jest.mock('../../../lib/log');
+jest.mock('../../../lib/jenkins');
+jest.mock('../../../lib/prompt');
+jest.mock('../watch-option');
+jest.mock('../stage-option');
 
 const spinner = {
   start: jest.fn(),
@@ -27,7 +25,7 @@ jest.doMock('ora', () => {
   return jest.fn().mockImplementation(() => spinner);
 });
 
-const build = require('../build');
+const build = require('../index');
 
 describe('build', () => {
   const branchName = 'foo';
@@ -53,10 +51,23 @@ describe('build', () => {
         },
       })
     );
+
+    jest.spyOn(global.console, 'log').mockImplementation();
+    jest.spyOn(process, 'exit').mockImplementation();
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
+  afterEach(jest.clearAllMocks);
+
+  it('should throw an error when the watch, stage options are enabled together', async () => {
+    const options = { watch: true, stage: true };
+    await build(options);
+
+    expect(console.log).toHaveBeenCalledWith(
+      yellow(
+        "Invalid options usage! Can't view the build console, stages together. Retry the command with a single option."
+      )
+    );
+    expect(process.exit).toHaveBeenCalledTimes(1);
   });
 
   it('should trigger a new build', async () => {
@@ -90,8 +101,6 @@ describe('build', () => {
   });
 
   it('should cancel the flow if confirmation rejected', async () => {
-    jest.spyOn(process, 'exit').mockImplementation();
-    jest.spyOn(global.console, 'log').mockImplementation();
     askConfirmationBeforeTriggeringNewBuild.mockImplementation(() =>
       Promise.resolve({ confirmation: false })
     );
@@ -114,66 +123,49 @@ describe('build', () => {
 
   describe('report build progress', () => {
     const options = { watch: true };
-    const buildId = 200;
 
     beforeEach(() => {
       getRunningBuilds.mockImplementation(() => Promise.resolve([]));
-
-      getQueueItem.mockImplementation(() =>
-        Promise.resolve({
-          executable: {
-            number: buildId,
-          },
-        })
-      );
     });
 
-    it('should handle the exception when it fails to report the build progress', async () => {
-      getQueueItem.mockImplementation(() => Promise.reject('failed'));
-
+    it('should invoke `reportBuildProgress` method with the correct arguments', async () => {
       await build(options);
 
-      expect(getQueueItem).toHaveBeenCalledWith('100', true);
-      expect(spinner.fail).toHaveBeenCalledWith(
-        'An error occurred while retrieving in progress build console'
-      );
+      expect(reportBuildProgress).toHaveBeenCalledWith(branchName, '100', spinner);
     });
 
-    it('should report when the queued job gets cancelled', async () => {
-      getQueueItem.mockImplementationOnce(() =>
-        Promise.resolve({
-          cancelled: true,
-        })
+    it('should handle exceptions while retrieving in progress build console', async () => {
+      reportBuildProgress.mockImplementationOnce(() =>
+        Promise.reject(new WatchError('Hello..'))
       );
 
       await build(options);
 
-      expect(spinner.fail).toHaveBeenCalledWith(
-        'Build has been cancelled. Unable to report the build progress.'
-      );
+      expect(spinner.fail).toHaveBeenCalledWith('Hello..');
+    });
+  });
+
+  describe('report build stages', () => {
+    const options = { stage: true };
+
+    beforeEach(() => {
+      getRunningBuilds.mockImplementation(() => Promise.resolve([]));
     });
 
-    it('should report the build progress', async () => {
-      const emitter = new EventEmitter();
-      createProgressiveTextStream.mockImplementation(() => emitter);
+    it('should invoke `reportBuildStages` method with the correct arguments', async () => {
+      await build(options);
+
+      expect(reportBuildStages).toHaveBeenCalledWith(branchName, '100', spinner);
+    });
+
+    it('should handle exceptions while retrieving in progress build stages', async () => {
+      reportBuildStages.mockImplementationOnce(() =>
+        Promise.reject(new WatchError('Hello..'))
+      );
 
       await build(options);
 
-      expect(createProgressiveTextStream).toHaveBeenCalledWith(branchName, buildId);
-      expect(emitter.eventNames()).toEqual(['data', 'end', 'error']);
-    });
-
-    it('should handle any exceptions while retrieving in progress build console', async () => {
-      const emitter = new EventEmitter();
-      createProgressiveTextStream.mockImplementation(() => emitter);
-
-      await build(options);
-
-      emitter.emit('error', new Error('boom!'));
-
-      expect(spinner.fail).toHaveBeenCalledWith(
-        'An error occurred while retrieving in progress build console'
-      );
+      expect(spinner.fail).toHaveBeenCalledWith('Hello..');
     });
   });
 });

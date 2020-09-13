@@ -5,7 +5,15 @@ describe('formatMs', () => {
     const hourInMs = 3600000;
     const thirtyMinutesInMs = 1800000;
     const thirtySecondsInMs = 30000;
+    const oneSecond = 1000;
+    const oneMilliSecond = 1;
+    const fiveHundredMilliSeconds = 500;
 
+    expect(formatMs(-1)).toBe('00');
+    expect(formatMs(0)).toBe('00');
+    expect(formatMs(oneMilliSecond)).toBe('01 ms');
+    expect(formatMs(fiveHundredMilliSeconds)).toBe('500 ms');
+    expect(formatMs(oneSecond)).toBe('01 sec');
     expect(formatMs(hourInMs)).toBe('01 hrs');
     expect(formatMs(thirtyMinutesInMs)).toBe('30 min');
     expect(formatMs(thirtySecondsInMs)).toBe('30 sec');

@@ -1,7 +1,16 @@
 const figures = require('figures');
 const { yellow, blue, red, green, magenta } = require('kleur');
 
-module.exports = {
+const STATUS_TYPES = {
+  failed: 'FAILED',
+  success: 'SUCCESS',
+  aborted: 'ABORTED',
+  inProgress: 'IN_PROGRESS',
+  notExecuted: 'NOT_EXECUTED',
+  unstable: 'UNSTABLE',
+};
+
+const BUILD_STATUS = {
   FAILED: {
     icon: red(figures.cross),
     label: red('Failed'),
@@ -26,4 +35,9 @@ module.exports = {
     icon: yellow(figures.checkboxOff),
     label: yellow('Unstable'),
   },
+};
+
+module.exports = {
+  STATUS_TYPES,
+  BUILD_STATUS,
 };

@@ -50,6 +50,7 @@ jen
   .command(COMMAND.build)
   .alias('b')
   .option('-w, --watch', 'Watch build console output')
+  .option('-s, --stage', 'View build stages')
   .description('Trigger a new build')
   .action(option => {
     run(COMMAND.build, option);
