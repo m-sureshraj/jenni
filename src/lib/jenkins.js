@@ -8,6 +8,8 @@ const { getGitRootDirPath } = require('./git-cmd');
 const { JOB_TYPE } = require('../config');
 const { debug } = require('./log');
 const StreamProgressiveText = require('./stream-progressive-text');
+const StreamBuildStages = require('./stream-build-stages');
+const { STATUS_TYPES } = require('./build-status');
 
 const store = new Conf();
 const client = got.extend({ timeout: 3000 });
@@ -165,7 +167,7 @@ async function getBuilds(branchName) {
 }
 
 function filterRunningBuilds(builds) {
-  return builds.filter(build => build.status === 'IN_PROGRESS');
+  return builds.filter(build => build.status === STATUS_TYPES.inProgress);
 }
 
 exports.getJobLink = function(branchName) {
@@ -245,6 +247,14 @@ exports.createProgressiveTextStream = function(branchName, buildId) {
   const url = `${getJobUrl(branchName)}/${buildId}/logText/progressiveText`;
 
   return new StreamProgressiveText(url);
+};
+
+exports.createBuildStageStream = function(branchName, buildId) {
+  if (!buildId) throw Error('Invalid build id');
+
+  const url = `${getJobUrl(branchName)}/${buildId}/wfapi/describe`;
+
+  return new StreamBuildStages({ url });
 };
 
 /* Notes related to queue (https://stackoverflow.com/a/45514691/2967670)

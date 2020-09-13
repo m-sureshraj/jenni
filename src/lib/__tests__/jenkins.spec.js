@@ -1,5 +1,4 @@
 const EventEmitter = require('events');
-const { parse } = require('url');
 
 const nock = require('nock');
 const Conf = require('conf');
@@ -13,9 +12,11 @@ const {
   getRunningBuilds,
   getQueueItem,
   createProgressiveTextStream,
+  createBuildStageStream,
 } = require('../jenkins');
 const { getGitRootDirPath } = require('../git-cmd');
 const { JOB_TYPE } = require('../../config');
+const { STATUS_TYPES } = require('../build-status');
 
 jest.mock('../git-cmd');
 jest.mock('conf');
@@ -522,93 +523,43 @@ describe('createProgressiveTextStream', () => {
 
     expect(stream).toBeInstanceOf(EventEmitter);
 
-    process.nextTick(() => {
+    stream.on('end', () => {
       done();
     });
   });
+});
 
-  it('should emit logs progressively', done => {
-    const responses = {
-      0: { text: 'foo', hasMore: true, size: 3 },
-      3: { text: 'foo bar', hasMore: true, size: 6 },
-      6: { text: 'foo bar baz', size: 9 },
-    };
+describe('createBuildStageStream', () => {
+  const branchName = 'foo';
+  const buildId = 100;
 
-    mockServer
-      .get(url)
-      .times(3)
-      .query(true)
-      .reply(uri => {
-        const { start } = parse(uri, true).query;
-        const response = responses[start];
+  let mockServer;
+  let url;
+  beforeAll(() => {
+    mockServer = nock(jenkinsCredentials.url);
+    url = `${jobConfigPath}/job/${branchName}/${buildId}/wfapi/describe`;
+  });
 
-        return [
-          200,
-          response.text,
-          {
-            'x-text-size': response.size,
-            ...(response.hasMore && { 'x-more-data': true }),
-          },
-        ];
-      });
+  it('should throw an error for invalid id', () => {
+    const branchName = 'branch-x';
+    const buildId = null;
 
-    const stream = createProgressiveTextStream(branchName, buildId);
-    let logs = [];
+    expect(() => {
+      createBuildStageStream(branchName, buildId);
+    }).toThrow('Invalid build id');
+  });
 
-    stream.on('data', text => {
-      logs.push(text);
+  it('should return an event emitter to retrieve stages progressively', done => {
+    mockServer.get(url).reply(200, {
+      status: STATUS_TYPES.success,
+      stages: [],
     });
+
+    const stream = createBuildStageStream(branchName, buildId);
+
+    expect(stream).toBeInstanceOf(EventEmitter);
 
     stream.on('end', () => {
-      expect(logs).toHaveLength(3);
-      expect(logs.join(', ')).toBe('foo, foo bar, foo bar baz');
-      done();
-    });
-
-    stream.on('error', error => {
-      done(error);
-    });
-  });
-
-  it('should end the stream if it encountered any errors while emitting logs', done => {
-    const responses = {
-      0: { text: 'foo', hasMore: true, size: 3 },
-      3: { text: 'foo bar', hasMore: true, size: 6 },
-      6: { text: 'foo bar baz', size: 9 },
-    };
-
-    mockServer
-      .get(url)
-      .times(2)
-      .query(true)
-      .reply(uri => {
-        const { start } = parse(uri, true).query;
-        const response = responses[start];
-
-        return [
-          200,
-          response.text,
-          {
-            'x-text-size': response.size,
-            ...(response.hasMore && { 'x-more-data': true }),
-          },
-        ];
-      })
-      .get(url)
-      .query(true)
-      .replyWithError('boom!');
-
-    const stream = createProgressiveTextStream(branchName, buildId);
-    let logs = [];
-
-    stream.on('data', text => {
-      logs.push(text);
-    });
-
-    stream.on('error', error => {
-      expect(logs).toHaveLength(2);
-      expect(logs.join(', ')).toBe('foo, foo bar');
-      expect(error.message).toBe('boom!');
       done();
     });
   });
