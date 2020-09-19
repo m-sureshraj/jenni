@@ -97,6 +97,30 @@ describe('getJobs', () => {
       ],
     },
     {
+      _class: 'jenkins.branch.OrganizationFolder',
+      displayName: 'org-folder-display-name',
+      name: 'organization-folder',
+      url: 'http://localhost:8080/job/organization-folder/',
+      jobs: [
+        {
+          _class: 'org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject',
+          displayName: 'sample_project_for_jenni',
+          name: 'sample_project_for_jenni',
+          url:
+            'http://localhost:8080/job/organization-folder/job/sample_project_for_jenni/',
+          jobs: [
+            {
+              _class: 'org.jenkinsci.plugins.workflow.job.WorkflowJob',
+              displayName: 'master',
+              name: 'master',
+              url:
+                'http://localhost:8080/job/organization-folder/job/sample_project_for_jenni/job/master/',
+            },
+          ],
+        },
+      ],
+    },
+    {
       name: 'Github type jenkins project',
       url: 'http://localhost:8080/job/Github%20type%20jenkins%20project/',
       _class: 'org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject',
@@ -144,6 +168,12 @@ describe('getJobs', () => {
         type: 'WorkflowMultiBranchProject',
       },
       {
+        name: 'org-folder-display-name → sample_project_for_jenni',
+        url:
+          'http://localhost:8080/job/organization-folder/job/sample_project_for_jenni/',
+        type: 'WorkflowMultiBranchProject',
+      },
+      {
         name: 'sample folder → one more folder → nested',
         url:
           'http://localhost:8080/job/folder%20project/job/one%20more%20folder/job/nested/',
@@ -151,7 +181,7 @@ describe('getJobs', () => {
       },
     ];
 
-    expect(jobs).toEqual(expectedResult);
+    expect(jobs).toStrictEqual(expectedResult);
   });
 
   it('should throw an error when request fails', async () => {
