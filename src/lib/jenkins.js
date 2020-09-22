@@ -122,26 +122,28 @@ function extractJobType(str = '') {
   return str.split('.').pop();
 }
 
-function flattenNestedJobs(jobs) {
+function flattenNestedJobs(nestedJobs) {
   function mapJobs(job) {
     return {
       ...job,
-      displayName: `${this.folderName} → ${job.displayName || job.name}`,
+      displayName: `${this.parentName} → ${job.displayName || job.name}`,
     };
   }
 
+  const jobs = [...nestedJobs]; // to avoid mutating the argument
   const transformedJobs = [];
   let job;
   let jobType = '';
+
   while (jobs.length) {
     job = jobs.shift();
     job.displayName = job.displayName || job.name;
     jobType = extractJobType(job._class);
 
-    if (jobType === 'Folder') {
+    if (jobType === 'Folder' || jobType === 'OrganizationFolder') {
       jobs.push(
         ...job.jobs.map(mapJobs, {
-          folderName: job.displayName,
+          parentName: job.displayName,
         })
       );
     } else {
