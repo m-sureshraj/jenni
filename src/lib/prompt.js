@@ -88,7 +88,7 @@ exports.askConfirmation = function() {
   const question = {
     type: 'confirm',
     name: 'confirmation',
-    message: 'Are you sure you want to save this configuration?',
+    message: 'Are you sure you want to save this configuration',
     initial: true,
   };
 
@@ -99,7 +99,7 @@ exports.askConfirmationBeforeTriggeringNewBuild = function() {
   const question = {
     type: 'confirm',
     name: 'confirmation',
-    message: 'A build is already in progress. Do you like to create another build?',
+    message: 'A build is already in progress. Do you like to create another build',
     initial: false,
   };
 
@@ -115,4 +115,15 @@ exports.askToSelectARunningBuild = function(runningBuilds = []) {
   };
 
   return prompts(choices);
+};
+
+exports.getDeleteConfigConfirmation = function() {
+  const question = {
+    type: 'confirm',
+    name: 'confirmation',
+    message: 'Are you sure you want to delete the app configuration',
+    initial: false,
+  };
+
+  return prompts(question);
 };

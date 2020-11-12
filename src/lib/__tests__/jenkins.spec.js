@@ -21,8 +21,6 @@ const { STATUS_TYPES } = require('../build-status');
 jest.mock('../git-cmd');
 jest.mock('conf');
 
-const EXTENDED_TIMEOUT = 8000;
-
 const jenkinsCredentials = {
   username: 'bingo',
   token: 'abc468&*&$$--rtu',
@@ -475,39 +473,39 @@ describe('getQueueItem', () => {
     }
   );
 
-  it(
-    'when `retryUntilBuildFound` param is true, it should retry when it could not find the build information',
-    async () => {
-      mockServer
-        .get(url)
-        .times(4)
-        .reply(200, responseWithoutBuildInfo)
-        .get(url)
-        .reply(200, response);
+  it('when `retryUntilBuildFound` param is true, it should retry when it could not find the build information', async () => {
+    mockServer
+      .get(url)
+      .times(4)
+      .reply(200, responseWithoutBuildInfo)
+      .get(url)
+      .reply(200, response);
 
-      const retryUntilBuildFound = true;
-      const queueItem = await getQueueItem(queuedItemNumber, retryUntilBuildFound);
+    const retryUntilBuildFound = true;
+    const retryDelayInMs = 10;
+    const queueItem = await getQueueItem(
+      queuedItemNumber,
+      retryUntilBuildFound,
+      retryDelayInMs
+    );
 
-      expect(queueItem).toEqual(response);
-    },
-    EXTENDED_TIMEOUT
-  );
+    expect(queueItem).toEqual(response);
+  });
 
-  it(
-    'should throw an error if max retry attempts reached',
-    () => {
-      mockServer
-        .get(url)
-        .times(5)
-        .reply(200, responseWithoutBuildInfo);
+  it('should throw an error if max retry attempts reached', () => {
+    mockServer
+      .get(url)
+      .times(5)
+      .reply(200, responseWithoutBuildInfo);
 
-      const retryUntilBuildFound = true;
-      return expect(getQueueItem(queuedItemNumber, retryUntilBuildFound)).rejects.toMatch(
-        'Maximum retry attempts reached. Unable to find the build information from the queue item'
-      );
-    },
-    EXTENDED_TIMEOUT
-  );
+    const retryUntilBuildFound = true;
+    const retryDelayInMs = 10;
+    return expect(
+      getQueueItem(queuedItemNumber, retryUntilBuildFound, retryDelayInMs)
+    ).rejects.toMatch(
+      'Maximum retry attempts reached. Unable to find the build information from the queue item'
+    );
+  });
 
   it('should throw an error when request fails inside the retry phase', async () => {
     mockServer
