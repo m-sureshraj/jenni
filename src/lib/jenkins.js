@@ -262,7 +262,11 @@ exports.createBuildStageStream = function(branchName, buildId) {
 /* Notes related to queue (https://stackoverflow.com/a/45514691/2967670)
  * If a build has not yet started, the build information will be blank.
  * Once a build has started, Jenkins will remove the queue item after 5 minutes. */
-exports.getQueueItem = async function(itemNumber, retryUntilBuildFound = false) {
+exports.getQueueItem = async function(
+  itemNumber,
+  retryUntilBuildFound = false,
+  retryDelayInMs = 1000
+) {
   if (!itemNumber) throw Error('Invalid queue item number');
 
   const url = `${getBaseUrl()}/queue/item/${itemNumber}/api/json`;
@@ -275,7 +279,6 @@ exports.getQueueItem = async function(itemNumber, retryUntilBuildFound = false) 
   debug(
     'Unable to find the build information from the queue item on the initial attempt'
   );
-  const retryDelayInMs = 1000;
   const maximumRetryAttempts = 3;
   let attempts = 0;
 

@@ -26,18 +26,18 @@ const printConsole = require('../console');
 describe('console', () => {
   const branchName = 'foo';
   let spiedStdWrite;
-  beforeAll(() => {
+  beforeEach(() => {
+    spiedStdWrite = jest.spyOn(process.stdout, 'write').mockImplementation();
     getCurrentBranchName.mockImplementation(() => branchName);
     getRunningBuilds.mockImplementation(() => []);
-    spiedStdWrite = jest.spyOn(process.stdout, 'write').mockImplementation();
-  });
-
-  afterAll(() => {
-    spiedStdWrite.mockRestore();
   });
 
   afterEach(() => {
     jest.clearAllMocks();
+  });
+
+  afterAll(() => {
+    spiedStdWrite.mockRestore();
   });
 
   describe('build id not defined', () => {
@@ -137,10 +137,10 @@ describe('console', () => {
     await printConsole(options);
 
     setTimeout(() => {
-      expect(spiedStdWrite.mock.calls[0][0]).toBe(yellow('Build (#10) console\n\n'));
-      expect(spiedStdWrite.mock.calls[1][0]).toBe('1: hello');
-      expect(spiedStdWrite.mock.calls[2][0]).toBe('2: hello');
-      expect(spiedStdWrite.mock.calls[3][0]).toBe('3: hello');
+      expect(spiedStdWrite).toHaveBeenNthCalledWith(1, yellow('Build (#10) console\n\n'));
+      expect(spiedStdWrite).toHaveBeenNthCalledWith(2, '1: hello');
+      expect(spiedStdWrite).toHaveBeenNthCalledWith(3, '2: hello');
+      expect(spiedStdWrite).toHaveBeenNthCalledWith(4, '3: hello');
       done();
     }, 500);
   });
