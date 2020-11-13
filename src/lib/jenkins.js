@@ -35,7 +35,7 @@ function getJobUrl(branchName, includeCredentials = true) {
       return `${baseUrl}${config.job.path}`;
 
     case JOB_TYPE.WorkflowMultiBranchProject:
-      return `${baseUrl}${config.job.path}/job/${branchName}`;
+      return `${baseUrl}${config.job.path}/job/${encodeURIComponent(branchName)}`;
 
     default:
       throw new Error(`Unsupported job type: ${config.job.type}`);
