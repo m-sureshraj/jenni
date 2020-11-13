@@ -198,6 +198,16 @@ describe('getJobLink', () => {
     expect(jobLink).toBe(expectedLink);
   });
 
+  it('should encode the branch name when it contains slashes', () => {
+    const branchName = 'feature/foo';
+    const jobLink = getJobLink(branchName);
+    const expectedLink = `${jenkinsCredentials.url}${
+      jobConfig.path
+    }/job/${encodeURIComponent(branchName)}`;
+
+    expect(jobLink).toBe(expectedLink);
+  });
+
   it('should throw an error for invalid job type', () => {
     jobConfig.type = 'Invalid job';
     const branchName = 'feature-x';

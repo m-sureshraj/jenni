@@ -13,7 +13,7 @@ function mapJob(job) {
   return {
     title: job.name,
     value: {
-      name: job.name,
+      name: job.name.trim(),
       path: removeTrailingSlash(url.parse(job.url).path),
       type: job.type,
     },
