@@ -13,6 +13,8 @@ const {
   getQueueItem,
   createProgressiveTextStream,
   createBuildStageStream,
+  enableJob,
+  isJobBuildable,
 } = require('../jenkins');
 const { getGitRootDirPath } = require('../git-cmd');
 const { JOB_TYPE } = require('../../config');
@@ -600,5 +602,50 @@ describe('createBuildStageStream', () => {
     stream.on('end', () => {
       done();
     });
+  });
+});
+
+describe('isJobBuildable', () => {
+  const branchName = 'feature-z';
+  let mockServer;
+  let url;
+  beforeAll(() => {
+    mockServer = nock(jenkinsCredentials.url);
+    url = `${jobConfigPath}/job/${branchName}/api/json`;
+  });
+
+  it("should throw an error when it couldn't find the `buildable` property in the response", async () => {
+    mockServer
+      .get(url)
+      .query({ tree: 'buildable' })
+      .reply(200, {});
+
+    await expect(isJobBuildable(branchName)).rejects.toThrow(
+      "Failed to get the job's buildable status"
+    );
+  });
+
+  it("should return the job's buildable status", async () => {
+    mockServer
+      .get(url)
+      .query({ tree: 'buildable' })
+      .reply(200, { buildable: true });
+
+    expect(await isJobBuildable(branchName)).toBe(true);
+  });
+});
+
+describe('enableJob', () => {
+  const branchName = 'feature-z';
+  let mockServer;
+  let url;
+  beforeAll(() => {
+    mockServer = nock(jenkinsCredentials.url);
+    url = `${jobConfigPath}/job/${branchName}/enable`;
+  });
+
+  it('should enable the job', async () => {
+    mockServer.post(url).reply(302);
+    await enableJob(branchName);
   });
 });

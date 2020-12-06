@@ -1,4 +1,4 @@
-const { red, yellow } = require('kleur');
+const { yellow } = require('kleur');
 
 const { getCurrentBranchName } = require('../../../lib/git-cmd');
 const { triggerNewBuild, getRunningBuilds } = require('../../../lib/jenkins');
@@ -7,6 +7,7 @@ const { askConfirmationBeforeTriggeringNewBuild } = require('../../../lib/prompt
 const { WatchError } = require('../../../lib/errors');
 const reportBuildProgress = require('../watch-option');
 const reportBuildStages = require('../stage-option');
+const assertJobBuildable = require('../assert-job-buildable');
 
 jest.mock('../../../lib/git-cmd');
 jest.mock('../../../lib/log');
@@ -14,6 +15,7 @@ jest.mock('../../../lib/jenkins');
 jest.mock('../../../lib/prompt');
 jest.mock('../watch-option');
 jest.mock('../stage-option');
+jest.mock('../assert-job-buildable');
 
 const spinner = {
   start: jest.fn(),
@@ -52,11 +54,23 @@ describe('build', () => {
       })
     );
 
+    assertJobBuildable.mockImplementationOnce(() => Promise.resolve());
+
     jest.spyOn(global.console, 'log').mockImplementation();
     jest.spyOn(process, 'exit').mockImplementation();
   });
 
   afterEach(jest.clearAllMocks);
+
+  it('should assert job is buildable', async () => {
+    getRunningBuilds.mockImplementation(() => Promise.resolve([]));
+
+    const options = {};
+    await build(options);
+
+    expect(assertJobBuildable).toHaveBeenCalledWith(branchName, spinner);
+    expect(triggerNewBuild).toHaveBeenCalled();
+  });
 
   it('should throw an error when the watch, stage options are enabled together', async () => {
     const options = { watch: true, stage: true };
@@ -107,7 +121,7 @@ describe('build', () => {
 
     await build();
 
-    expect(console.log.mock.calls[0][0]).toBe(red('Aborted'));
+    expect(spinner.fail).toHaveBeenCalledWith('Aborted');
     expect(process.exit).toHaveBeenCalledTimes(1);
   });
 

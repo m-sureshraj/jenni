@@ -1,5 +1,5 @@
 const ora = require('ora');
-const { red, yellow } = require('kleur');
+const { yellow } = require('kleur');
 
 const { getCurrentBranchName } = require('../../lib/git-cmd');
 const { logNetworkErrors, debug } = require('../../lib/log');
@@ -8,6 +8,7 @@ const { askConfirmationBeforeTriggeringNewBuild } = require('../../lib/prompt');
 const { ERROR_TYPE } = require('../../lib/errors');
 const reportBuildStages = require('./stage-option');
 const reportBuildProgress = require('./watch-option');
+const assertJobBuildable = require('./assert-job-buildable');
 
 const spinner = ora();
 
@@ -32,8 +33,10 @@ module.exports = async function build(options = {}) {
   const branchName = getCurrentBranchName();
   debug(`Branch name: ${branchName}`);
 
+  await assertJobBuildable(branchName, spinner);
+
   try {
-    spinner.start();
+    if (!spinner.isSpinning) spinner.start();
 
     const runningBuilds = await getRunningBuilds(branchName);
     if (runningBuilds.length) {
@@ -41,7 +44,7 @@ module.exports = async function build(options = {}) {
 
       const { confirmation } = await askConfirmationBeforeTriggeringNewBuild();
       if (!confirmation) {
-        console.log(red('Aborted'));
+        spinner.fail('Aborted');
         process.exit();
       }
 
