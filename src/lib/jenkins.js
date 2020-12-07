@@ -29,7 +29,7 @@ function getJobUrl(branchName, includeCredentials = true) {
   const config = store.get(getGitRootDirPath());
   const baseUrl = getBaseUrl(config, includeCredentials);
 
-  // TODO: add other Jenkins job types
+  // TODO: support other Jenkins job types
   switch (config.job.type) {
     case JOB_TYPE.WorkflowJob:
       return `${baseUrl}${config.job.path}`;
@@ -172,6 +172,21 @@ function filterRunningBuilds(builds) {
   return builds.filter(build => build.status === STATUS_TYPES.inProgress);
 }
 
+async function getJob(branchName, fieldsToPick = []) {
+  const jobUrl = getJobUrl(branchName);
+
+  let qs = '';
+  if (fieldsToPick.length) {
+    qs = `tree=${fieldsToPick.join(',')}`;
+  }
+
+  const { body } = await client.get(`${jobUrl}/api/json?${qs}`, {
+    json: true,
+  });
+
+  return body;
+}
+
 exports.getJobLink = function(branchName) {
   return getJobUrl(branchName, false);
 };
@@ -312,5 +327,24 @@ exports.getQueueItem = async function(
     }
 
     return _getQueueItem();
+  });
+};
+
+exports.isJobBuildable = async function(branchName) {
+  const { buildable } = await getJob(branchName, ['buildable']);
+
+  if (typeof buildable !== 'boolean') {
+    throw Error("Failed to get the job's buildable status");
+  }
+
+  return buildable;
+};
+
+exports.enableJob = async function(branchName) {
+  const jobUrl = getJobUrl(branchName);
+
+  // Jenkins returns 302 (redirect) response if the request succeeds.
+  return client.post(`${jobUrl}/enable`, {
+    followRedirect: false,
   });
 };

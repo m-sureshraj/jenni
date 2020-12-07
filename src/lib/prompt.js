@@ -127,3 +127,15 @@ exports.getDeleteConfigConfirmation = function() {
 
   return prompts(question);
 };
+
+exports.getConfirmationToEnableTheJob = function() {
+  const question = {
+    type: 'confirm',
+    name: 'confirmation',
+    message:
+      'The job is currently disabled. Do you like to enable and trigger a build on it',
+    initial: true,
+  };
+
+  return prompts(question);
+};
