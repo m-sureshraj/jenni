@@ -1,4 +1,4 @@
-name: Jenni CI
+name: Build
 
 on:
   push:
